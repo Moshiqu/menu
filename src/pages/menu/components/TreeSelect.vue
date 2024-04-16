@@ -11,7 +11,7 @@
                     @click="parentClickHandler(-1)">
                     分类管理
                 </view>
-                <view :style="{background: '#fff',paddingBottom:'300rpx'}">
+                <view :style="{ background: '#fff', paddingBottom: '300rpx' }">
                 </view>
             </scroll-view>
         </view>
@@ -65,8 +65,9 @@
 <script setup>
 import MkDialog from '@/src/components/MkDialog'
 import MkLoading from '@/src/components/MkLoading'
-import { ref, reactive, nextTick, getCurrentInstance, computed, watch, defineProps } from 'vue'
+import { ref, reactive, nextTick, getCurrentInstance, computed, watch, defineProps, onMounted } from 'vue'
 import { throttle } from 'lodash'
+import { getMenu } from '@/src/api/menu'
 
 
 // 当前组件实例
@@ -88,6 +89,20 @@ const treeData_show = parentTab.map(parent => {
 
 // 树形结构响应式
 const treeData = reactive(treeData_show)
+
+onMounted(() => {
+    getMenuData()
+})
+
+const getMenuData = () => {
+    getMenu().then(res => {
+        console.log(res);
+    }).catch(err => {
+        console.log(err);
+    }).finally(()=>{
+        
+    })
+}
 
 // 存入pinia
 import { useMenuStore } from "@/src/store/menu"
