@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "element-plus": "^2.6.3",
+    "lodash": "^4.17.21",
+    "pinia": "^2.1.7"
+  }
+}

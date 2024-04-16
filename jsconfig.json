@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "baseUrl": "../",
+        "paths": {
+            "@/*": ["menu/*"]
+        }
+    },
+    "exclude": ["node_modules", "dist"]
+}
