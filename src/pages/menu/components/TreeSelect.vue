@@ -2,9 +2,9 @@
     <view class="menu_content">
         <view class="category">
             <scroll-view scroll-y style="height: 100%;" scroll-with-animation>
-                <view :class="['tab', parentActiveId == item.parentId ? 'active' : '']" v-for="item in treeData"
-                    :key="item.parentId" @click="parentClickHandler(item.parentId)">
-                    {{ item.name }}
+                <view :class="['tab', parentActiveId == item.id ? 'active' : '']" v-for="item in treeData" :key="item.id"
+                    @click="parentClickHandler(item.id)">
+                    {{ item.category_name }}
                     <view class="dot" v-if="calDot(item.children)">{{ calDot(item.children) }}</view>
                 </view>
                 <view :class="['tab category_set', parentActiveId === -1 ? 'active' : '']" style="color: #2678fa;"
@@ -19,14 +19,14 @@
             <view class="unvisible_box"></view>
             <scroll-view scroll-y style="height: 100%;" :scroll-into-view="intoParentId" scroll-with-animation
                 class="scroll-view" @scroll="handleScroll">
-                <view class="cate" v-for="item in treeData" :key="item.parentId" :id="'parent_' + item.parentId">
-                    <view class="cate_title" v-if="item.children.length">{{ item.name }}</view>
-                    <view class="product_card" v-for="(product, productIndex) in item.children" :key="product.productId">
+                <view class="cate" v-for="item in treeData" :key="item.id" :id="'parent_' + item.id">
+                    <view class="cate_title" v-if="item.children.length">{{ item.category_name }}</view>
+                    <view class="product_card" v-for="(product, productIndex) in item.children" :key="product.id">
                         <image src="../../../../static/image/default_img.jpg" class="product_img"></image>
                         <view class="product_info">
-                            <view class="product_title">{{ product.name }}</view>
-                            <view class="product_desc">{{ product.description }}</view>
-                            <view class="product_sale" v-if="!isEdit">销量:{{ product.saleNum || 0 }}</view>
+                            <view class="product_title">{{ product.product_name }}</view>
+                            <view class="product_desc">{{ product.product_description }}</view>
+                            <view class="product_sale" v-if="!isEdit">销量:{{ product.sold_num || 0 }}</view>
                             <view class="product_operation" v-if="!isEdit">
                                 <template v-if="product.selectNum">
                                     <image src="../../../../static/image/menu/icon_minus.png" class="btn"
@@ -34,16 +34,17 @@
                                     <text class="select_text">{{ product.selectNum }}</text>
                                 </template>
                                 <image src="../../../../static/image/menu/icon_plus.png" class="btn plus"
-                                    @click="plusMinusHandler(product, 'plus')" :id="`startBtn_${product.productId}`" />
-                                <view class="fly_item" :id="`flyItem_${product.productId}`"
-                                    :style="product.productId == animationProductId ? flyItemStyle : {}">
-                                    <view class="ball" :id="`flyBall_${product.productId}`"
-                                        :style="product.productId == animationProductId ? flyBallStyle : {}"></view>
+                                    @click="plusMinusHandler(product, 'plus')" :id="`startBtn_${product.id}`" />
+                                <view class="fly_item" :id="`flyItem_${product.id}`"
+                                    :style="product.id == animationProductId ? flyItemStyle : {}">
+                                    <view class="ball" :id="`flyBall_${product.id}`"
+                                        :style="product.id == animationProductId ? flyBallStyle : {}"></view>
                                 </view>
                             </view>
                             <view class="product_btns" v-else>
-                                <text v-if="product.index !== 1" @click="move(true, item, product, productIndex)">上移</text>
-                                <text v-if="product.index !== item.children.length"
+                                <text v-if="product.sort_index !== 1"
+                                    @click="move(true, item, product, productIndex)">上移</text>
+                                <text v-if="product.sort_index !== item.children.length"
                                     @click="move(false, item, product, productIndex)">下移</text>
                                 <text @click="editProduction(product)">编辑</text>
                                 <text @click="showDialog = true, currentProduct = product">删除</text>
@@ -65,7 +66,7 @@
 <script setup>
 import MkDialog from '@/src/components/MkDialog'
 import MkLoading from '@/src/components/MkLoading'
-import { ref, reactive, nextTick, getCurrentInstance, computed, watch, defineProps, onMounted } from 'vue'
+import { ref, nextTick, getCurrentInstance, computed, watch, defineProps, onMounted } from 'vue'
 import { throttle } from 'lodash'
 import { getMenu } from '@/src/api/menu'
 
@@ -73,43 +74,24 @@ import { getMenu } from '@/src/api/menu'
 // 当前组件实例
 const currentInstance = getCurrentInstance()
 
-// 分类数据
-const parentTab = reactive([{ parentId: 1, name: '蔬菜', index: 1 }, { parentId: 2, name: '肉类', index: 2 }, { parentId: 3, name: '海鲜', index: 3 }, { parentId: 4, name: '主食', index: 4 }, { parentId: 5, name: '汤', index: 5 }, { parentId: 6, name: '牛排', index: 6 }, { parentId: 7, name: '饮料', index: 7 }, { parentId: 8, name: '时令蔬菜', index: 8 }, { parentId: 9, name: '宣传宣传宣传宣传宣传', index: 9 }, { parentId: 10, name: '水果', index: 10 }, { parentId: 11, name: '天气', index: 11 }])
-
-// 商品数据
-const productList = [{ parentId: 1, name: '莴笋', description: "这个是莴笋", productId: 1, saleNum: 11, index: 1 }, { parentId: 1, name: '番茄', description: "这个是番茄", productId: 2, index: 2 }, { parentId: 2, name: '猪肉', description: "这个是猪肉", productId: 3, index: 1 }, { parentId: 3, name: '生蚝', description: "这个是生蚝", productId: 4, index: 1 }, { parentId: 4, name: '米饭', description: "这个是米饭", productId: 5, index: 1 }, { parentId: 4, name: '稀饭', description: "这个是稀饭", productId: 6, index: 2 }]
-
-// 计算为树形结构并排序
-const treeData_show = parentTab.map(parent => {
-    const treeItem = JSON.parse(JSON.stringify(parent))
-    treeItem.children = productList.filter(item => item.parentId === parent.parentId).sort((a, b) => a.index - b.index) || []
-
-    return treeItem
-}).sort((a, b) => a.index - b.index)
-
-// 树形结构响应式
-const treeData = reactive(treeData_show)
+// 树形结构响应式 并存入pinia
+const treeData = ref([])
 
 onMounted(() => {
     getMenuData()
 })
 
-const getMenuData = () => {
-    getMenu().then(res => {
-        console.log(res);
-    }).catch(err => {
-        console.log(err);
-    }).finally(()=>{
-        
-    })
-}
-
-// 存入pinia
 import { useMenuStore } from "@/src/store/menu"
-
 const menuStore = useMenuStore()
 
-menuStore.setMenuList(treeData)
+const getMenuData = () => {
+    getMenu().then(res => {
+        treeData.value = res.data
+        menuStore.setMenuList(res.data)
+    }).catch(err => {
+    }).finally(() => {
+    })
+}
 
 // 激活的分类id
 const parentActiveId = ref(1)
@@ -119,9 +101,9 @@ const intoParentId = ref(`parent_1`)
 
 // 右侧产品栏最顶部的分类id
 nextTick(() => {
-    treeData.forEach(item => {
+    treeData.value.forEach(item => {
         if (item.children.length) {
-            uni.createIntersectionObserver(currentInstance).relativeTo('.unvisible_box').observe(`#parent_${item.parentId}`, (res) => {
+            uni.createIntersectionObserver(currentInstance).relativeTo('.unvisible_box').observe(`#parent_${item.id}`, (res) => {
                 const { id } = res
                 parentActiveId.value = id.replace(/[^\d]/g, "")
             })
@@ -131,11 +113,11 @@ nextTick(() => {
 
 
 // 分类栏点击事件
-const parentClickHandler = (parentId) => {
-    parentActiveId.value = parentId
-    intoParentId.value = 'parent_' + parentId
+const parentClickHandler = (id) => {
+    parentActiveId.value = id
+    intoParentId.value = 'parent_' + id
 
-    if (parentId == -1) {
+    if (id == -1) {
         uni.navigateTo({
             url: '../cateManagement/index'
         });
@@ -145,7 +127,7 @@ const parentClickHandler = (parentId) => {
 // 添加产品和减少产品
 // 购物车列表
 const cartList = computed(() => {
-    return treeData.filter(cate => {
+    return treeData.value.filter(cate => {
         const cateSelect = cate.children.filter(product => {
             return !!product.selectNum
         })
@@ -184,8 +166,8 @@ const flyItemStyle = ref({})
 const flyBallStyle = ref({})
 let viewScrollTop = 0
 
-const plusAnimationHandler = async (productId) => {
-    animationProductId.value = productId
+const plusAnimationHandler = async (id) => {
+    animationProductId.value = id
     flyItemStyle.value = { display: 'block' }
     // 现在按钮距离购物车的距离
     const boundBtn = await getBoundingClientRect(`#startBtn_${animationProductId.value}`)
@@ -246,7 +228,7 @@ const handleScroll = (event) => {
 const plusMinusHandler = throttle((product, type = 'plus') => {
     switch (type) {
         case 'plus':
-            plusAnimationHandler(product.productId)
+            plusAnimationHandler(product.id)
             if (!product.selectNum) {
                 product.selectNum = 1
             } else {
@@ -279,15 +261,15 @@ const $props = defineProps({
 
 const move = (up, cate, product, productIndex) => {
     if (up) {
-        const temp = product.index
-        product.index = cate.children[productIndex - 1].index
-        cate.children[productIndex - 1].index = temp
+        const temp = product.sort_index
+        product.sort_index = cate.children[productIndex - 1].sort_index
+        cate.children[productIndex - 1].sort_index = temp
     } else {
-        const temp = product.index
-        product.index = cate.children[productIndex + 1].index
-        cate.children[productIndex + 1].index = temp
+        const temp = product.sort_index
+        product.sort_index = cate.children[productIndex + 1].sort_index
+        cate.children[productIndex + 1].sort_index = temp
     }
-    cate.children.sort((a, b) => a.index - b.index)
+    cate.children.sort((a, b) => a.sort_index - b.sort_index)
 }
 
 const editProduction = (production) => {

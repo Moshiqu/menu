@@ -3,7 +3,7 @@
         <textarea :placeholder="placeholder" class="textarea_class" :maxlength="maxlength" v-model="textValue"
             @blur="blurHandler"></textarea>
         <view class="footer" :style="{ right: `${footerRight}rpx` }" v-if="maxlength != 255">
-            {{ textValue.length }}/{{ maxlength }}
+            {{ textValue?.length || 0 }}/{{ maxlength }}
         </view>
         <view class="textarea_class invisible_input">{{ textValue }}</view>
     </view>
@@ -16,7 +16,14 @@ const $props = defineProps({
     // 字体位置
     textAlign: { type: String, default: "left" },
     // 初始值
-    textareaValue: { type: String, default: "", required: true },
+    textareaValue: {
+        type: [String, null], // 允许 String 或 null 类型  
+        default: '', // 默认值为空字符串  
+        validator: function (value) {
+            // 自定义验证函数，接受 null 值  
+            return value === null || typeof value === 'string';
+        },
+    },
     maxlength: { type: Number, default: 255 },
     // 单一行, 占据父盒子高度的百分之多少
     minHeight: { type: Number, default: 50 },

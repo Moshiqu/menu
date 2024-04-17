@@ -7,10 +7,11 @@ export const useMenuStore = defineStore("menu", {
     getters: {
         cateList() {
             return this.menuList.map(item => {
+                const { category_name, id, sort_index } = item
                 return {
-                    parentId: item.parentId,
-                    name: item.name,
-                    index: item.index
+                    category_name,
+                    id,
+                    sort_index
                 }
             })
         }

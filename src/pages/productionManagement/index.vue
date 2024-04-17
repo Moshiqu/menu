@@ -20,9 +20,9 @@
                     分类
                 </view>
                 <view class="editor">
-                    <picker @change="bindPickerChange" :value="cateIndex" :range="menuList" range-key="name">
+                    <picker @change="bindPickerChange" :value="cateIndex" :range="cateList" range-key="category_name">
                         <view :class="[cateIndex == -1 ? 'picker_text picker_placeholder' : 'picker_text']">
-                            {{ cateIndex === -1 ? '请选择商品分类' : menuList[cateIndex] && menuList[cateIndex].name }}
+                            {{ cateIndex === -1 ? '请选择商品分类' : cateList[cateIndex] && cateList[cateIndex].category_name }}
                         </view>
                     </picker>
                 </view>
@@ -51,7 +51,7 @@
                 <view>保存</view>
                 <view>并继续添加做法</view>
             </view>
-            <view class="save_btn" @click="saveHandler">保存修改</view>
+            <view class="save_btn" @click="saveHandler">保存{{ productId ? '修改' : '' }}</view>
         </view>
     </view>
 </template>
@@ -65,26 +65,31 @@ import MkTextarea from '@/src/components/MkTextarea'
 import { useMenuStore } from "@/src/store/menu";
 const menuStore = useMenuStore()
 
-const production = ref({})
-const menuList = ref([])
-menuList.value = menuStore.menuList
+const cateList = ref([])
+cateList.value = menuStore.cateList
 
 // 获取跳转参数
 onLoad((query) => {
     if (JSON.stringify(query) != "{}") {
         const { production: production_source } = query
-        production.value = JSON.parse(decodeURIComponent(production_source))
-        productName.value = production.value.name
-        productDescription.value = production.value.description
-        for (let index = 0; index < menuList.value.length; index++) {
-            const element = menuList.value[index];
-            if (element.parentId == production.value.parentId) {
+        const production = JSON.parse(decodeURIComponent(production_source))
+        productId.value = production.id
+        productName.value = production.product_name
+        productDescription.value = production.product_description
+        console.log(productDescription.value);
+        productPrice.value = production.product_price
+        for (let index = 0; index < cateList.value.length; index++) {
+            const element = cateList.value[index];
+            if (element.id == production.category_id) {
                 cateIndex.value = index
                 break
             }
         }
     }
 })
+
+// 商品id
+const productId = ref(0)
 
 // 商品名称
 const productName = ref('')
@@ -118,7 +123,7 @@ const saveHandler = () => {
             duration: 2000
         })
     }
-    console.log(productName.value, cateIndex.value, productDescription.value, productPrice.value, production.value.productId);
+    console.log(productName.value, cateIndex.value, productDescription.value, productPrice.value, productId.value);
 }
 
 // 保存并添加做法
