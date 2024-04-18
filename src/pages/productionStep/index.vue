@@ -39,16 +39,31 @@
             </view>
         </view>
         <view class="operations">
-            <view class="back_btn" @click="backMenu">清空返回</view>
+            <view class="back_btn" @click="backMenu">返回首页</view>
             <view class="save_btn">保存</view>
         </view>
     </view>
 </template>
 
 <script setup>
+import { onLoad } from "@dcloudio/uni-app"
 import MkNormalBtn from '@/src/components/MkNormalBtn'
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 
+// 获取跳转参数
+onLoad((query) => {
+    if (JSON.stringify(query) != "{}") {
+        productionId.value = productionId
+    }
+})
+
+onMounted(() => {
+    // TODO 调试材料步骤接口
+})
+
+const productionId = ref(0)
+
+// 用料
 const materialData = ref([{ materialName: '', materialQuatity: '' }])
 
 // 添加用料
@@ -61,6 +76,7 @@ const deleteMaterial = (index) => {
     materialData.value.splice(index, 1)
 }
 
+// 步骤
 const stepData = ref([{
     description: "",
     imgUrl: "",
@@ -91,7 +107,7 @@ const deleteStep = (index) => {
 }
 
 // 返回首页
-const backMenu = ()=>{
+const backMenu = () => {
     uni.switchTab({
         url: `../menu/index`
     });

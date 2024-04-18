@@ -60,6 +60,7 @@
 import { onLoad } from "@dcloudio/uni-app"
 import { ref } from "vue"
 import MkTextarea from '@/src/components/MkTextarea'
+import { addProductionDetail, updateProductionDetail } from '@/src/api/menu'
 
 // 从pinia中获取菜单列表
 import { useMenuStore } from "@/src/store/menu";
@@ -76,7 +77,6 @@ onLoad((query) => {
         productId.value = production.id
         productName.value = production.product_name
         productDescription.value = production.product_description
-        console.log(productDescription.value);
         productPrice.value = production.product_price
         for (let index = 0; index < cateList.value.length; index++) {
             const element = cateList.value[index];
@@ -123,15 +123,82 @@ const saveHandler = () => {
             duration: 2000
         })
     }
-    console.log(productName.value, cateIndex.value, productDescription.value, productPrice.value, productId.value);
+
+    uni.showLoading({ title: '正在保存', icon: 'loading', mask: true })
+    const cateId = cateList.value[cateIndex.value].id
+
+    if (productId.value) {
+        updateProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value, id: productId.value }).then(res => {
+            uni.showToast({ title: '修改商品成功', icon: 'success', mask: true })
+            setTimeout(() => {
+                uni.navigateTo({
+                    url: `../productionStep/index?productionId=${res.data.id}`
+                });
+            }, 1500);
+        }).catch(err => {
+            uni.showToast({ title: '修改商品失败', icon: 'error', mask: true })
+        }).finally(() => {
+            uni.hideLoading()
+
+        })
+    } else {
+        addProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value }).then(res => {
+            uni.showToast({ title: '添加商品成功', icon: 'success', mask: true })
+            setTimeout(() => {
+                uni.switchTab({
+                    url: `../menu/index`
+                });
+            }, 1500);
+        }).catch(err => {
+            uni.showToast({ title: '添加商品失败', icon: 'error', mask: true })
+        }).finally(() => {
+            uni.hideLoading()
+
+        })
+    }
+
 }
 
 // 保存并添加做法
 const saveAndNext = () => {
-    // 如果是新增, 那么保存接口必定返回商品id, 去添加做法页面, 携带传回来的商品id
-    uni.navigateTo({
-        url: `../productionStep/index?productionId=${production.value.productId}`
-    });
+    if (!productName.value || cateIndex.value == -1) {
+        return uni.showToast({
+            title: productName.value ? '商品分类不能为空' : '商品名称不能为空',
+            icon: 'none',
+            duration: 2000
+        })
+    }
+
+    uni.showLoading({ title: '正在保存', icon: 'loading', mask: true })
+    const cateId = cateList.value[cateIndex.value].id
+    if (productId.value) {
+        updateProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value }).then(res => {
+            uni.showToast({ title: '修改商品成功', icon: 'success', mask: true })
+            setTimeout(() => {
+                uni.navigateTo({
+                    url: `../productionStep/index?productionId=${res.data.id}`
+                });
+            }, 1500);
+        }).catch(err => {
+            uni.showToast({ title: '修改商品失败', icon: 'error', mask: true })
+        }).finally(() => {
+            uni.hideLoading()
+        })
+    } else {
+        addProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value }).then(res => {
+            uni.showToast({ title: '添加商品成功', icon: 'success', mask: true })
+            setTimeout(() => {
+                uni.redirectTo({
+                    url: `../productionStep/index?productionId=${res.data.id}`
+                });
+            }, 1500);
+        }).catch(err => {
+            uni.showToast({ title: '添加商品失败', icon: 'error', mask: true })
+        }).finally(() => {
+            uni.hideLoading()
+        })
+    }
+
 }
 
 </script>

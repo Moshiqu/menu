@@ -13,10 +13,10 @@ function handleRequest(options, resolve, reject) {
         method: options.method,
         data: options.data,
         success: (response) => {
+            if (response.data.code != 200) return reject(response.data)
             return resolve(response.data)
         },
         fail: (fail) => {
-            console.log('fail', fail)
             return reject(fail);
         }
     })

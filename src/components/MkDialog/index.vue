@@ -1,6 +1,6 @@
 <template>
-    <view class="mk-dialog" v-if="$props.showDialog" @click="closeDialog">
-        <view class="dialog-card" @click.stop>
+    <view class="mk-dialog" v-if="$props.showDialog">
+        <view class="dialog-card">
             <view class="dialog-content">
                 <view class="title">
                     {{ $props.title }}
@@ -24,7 +24,7 @@ const $props = defineProps({
     title: { type: String, default: '标题' },
     description: { type: String, default: '这个是内容信息' }
 })
-const $emits = defineEmits(['confirm','update:showDialog'])
+const $emits = defineEmits(['confirm', 'update:showDialog'])
 
 console.log($props);
 
@@ -32,7 +32,7 @@ const closeDialog = () => {
     $emits("update:showDialog", false)
 }
 
-const confirmHandler =()=>{
+const confirmHandler = () => {
     $emits("confirm")
 }
 

@@ -58,7 +58,7 @@
             <view>{{ cartNum }}</view>
             <image src="../../../../static/image/menu/bowl.png" class="bowl" />
         </view>
-        <MkDialog v-model:showDialog="showDialog" @confirm="deleteProduct" />
+        <MkDialog v-model:showDialog="showDialog" @confirm="deleteProductHandler" />
         <MkLoading :loading="isLoading" showText text="正在删除" />
     </view>
 </template>
@@ -69,6 +69,7 @@ import MkLoading from '@/src/components/MkLoading'
 import { ref, nextTick, getCurrentInstance, computed, watch, defineProps, onMounted } from 'vue'
 import { throttle } from 'lodash'
 import { getMenu } from '@/src/api/menu'
+import { deleteProduct } from '@/src/api/menu';
 
 
 // 当前组件实例
@@ -78,18 +79,20 @@ const currentInstance = getCurrentInstance()
 const treeData = ref([])
 
 onMounted(() => {
-    getMenuData()
+    getMenuHandler()
 })
 
 import { useMenuStore } from "@/src/store/menu"
 const menuStore = useMenuStore()
 
-const getMenuData = () => {
+const getMenuHandler = () => {
+    uni.showLoading({ title: '正在加载...', icon: 'loading', mask: true })
     getMenu().then(res => {
         treeData.value = res.data
         menuStore.setMenuList(res.data)
     }).catch(err => {
     }).finally(() => {
+        uni.hideLoading()
     })
 }
 
@@ -260,6 +263,7 @@ const $props = defineProps({
 });
 
 const move = (up, cate, product, productIndex) => {
+    // TODO 联调排序接口
     if (up) {
         const temp = product.sort_index
         product.sort_index = cate.children[productIndex - 1].sort_index
@@ -285,12 +289,19 @@ const showDialog = ref(false)
 
 const currentProduct = ref(null)
 
-const deleteProduct = () => {
-    // 调用删除接口
-    // 展示loading
-    // 调用获取菜单接口
+const deleteProductHandler = () => {
+    if (!currentProduct.value) return uni.showToast({ title: "删除失败", icon: "error", showToast: true })
     showDialog.value = false
     isLoading.value = true
+    // 调用删除接口
+    deleteProduct({ id: currentProduct.value.id }).then((result) => {
+        uni.showToast({ title: "删除成功", icon: 'success' })
+        getMenuHandler()
+    }).catch((err) => {
+        uni.showToast({ title: "删除失败", icon: 'error' })
+    }).finally(() => {
+        isLoading.value = false
+    });
 }
 
 </script>
