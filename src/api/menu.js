@@ -11,3 +11,6 @@ export const updateProductionDetail = options => request({ url: "/api/menu/updat
 
 // 删除商品
 export const deleteProduct = options => request({ url: "/api/menu/deleteProduct", method: "DELETE", data: options })
+
+// 修改商品排序
+export const updateSort = options => request({ url: "/api/menu/updateSort", method: "POST", data: options })

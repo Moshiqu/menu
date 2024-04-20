@@ -16,7 +16,7 @@
                 <view class="btn" @click="addHandler">添加</view>
             </view>
         </view>
-        <TreeSelect :isEdit=isEdit />
+        <TreeSelect :isEdit=isEdit ref="treeSelectRef" />
     </view>
 </template>
 
@@ -28,6 +28,7 @@ const { menuHeight, menuTop } = uni.getStorageSync('menuInfo')
 import { ref } from 'vue'
 
 const isEdit = ref(false)
+const treeSelectRef = ref(null)
 
 const editHandler = () => {
     isEdit.value = !isEdit.value
@@ -38,6 +39,16 @@ const addHandler = () => {
         url: '../productionManagement/index'
     });
 }
+
+const refresh = () => {
+    if(treeSelectRef.value){
+        treeSelectRef.value.getMenuHandler()
+    }
+}
+
+defineExpose({
+    refresh
+})
 
 </script>
 

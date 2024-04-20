@@ -16,7 +16,7 @@
             </scroll-view>
         </view>
         <view class="product" id="product_box">
-            <view class="unvisible_box"></view>
+            <view class="unvisited_box"></view> 
             <scroll-view scroll-y style="height: 100%;" :scroll-into-view="intoParentId" scroll-with-animation
                 class="scroll-view" @scroll="handleScroll">
                 <view class="cate" v-for="item in treeData" :key="item.id" :id="'parent_' + item.id">
@@ -42,10 +42,9 @@
                                 </view>
                             </view>
                             <view class="product_btns" v-else>
-                                <text v-if="product.sort_index !== 1"
-                                    @click="move(true, item, product, productIndex)">上移</text>
-                                <text v-if="product.sort_index !== item.children.length"
-                                    @click="move(false, item, product, productIndex)">下移</text>
+                                <text v-if="productIndex" @click="productMove(true, item, product, productIndex)">上移</text>
+                                <text v-if="productIndex !== item.children.length - 1"
+                                    @click="productMove(false, item, product, productIndex)">下移</text>
                                 <text @click="editProduction(product)">编辑</text>
                                 <text @click="showDialog = true, currentProduct = product">删除</text>
                             </view>
@@ -70,7 +69,7 @@ import { ref, nextTick, getCurrentInstance, computed, watch, defineProps, onMoun
 import { throttle } from 'lodash'
 import { getMenu } from '@/src/api/menu'
 import { deleteProduct } from '@/src/api/menu';
-
+import { updateSort } from '@/src/api/menu'
 
 // 当前组件实例
 const currentInstance = getCurrentInstance()
@@ -85,6 +84,7 @@ onMounted(() => {
 import { useMenuStore } from "@/src/store/menu"
 const menuStore = useMenuStore()
 
+// 获取数据
 const getMenuHandler = () => {
     uni.showLoading({ title: '正在加载...', icon: 'loading', mask: true })
     getMenu().then(res => {
@@ -96,6 +96,10 @@ const getMenuHandler = () => {
     })
 }
 
+defineExpose({
+    getMenuHandler
+})
+
 // 激活的分类id
 const parentActiveId = ref(1)
 
@@ -106,7 +110,7 @@ const intoParentId = ref(`parent_1`)
 nextTick(() => {
     treeData.value.forEach(item => {
         if (item.children.length) {
-            uni.createIntersectionObserver(currentInstance).relativeTo('.unvisible_box').observe(`#parent_${item.id}`, (res) => {
+            uni.createIntersectionObserver(currentInstance).relativeTo('.unvisited_box').observe(`#parent_${item.id}`, (res) => {
                 const { id } = res
                 parentActiveId.value = id.replace(/[^\d]/g, "")
             })
@@ -262,18 +266,24 @@ const $props = defineProps({
     isEdit: Boolean,
 });
 
-const move = (up, cate, product, productIndex) => {
-    // TODO 联调排序接口
-    if (up) {
-        const temp = product.sort_index
-        product.sort_index = cate.children[productIndex - 1].sort_index
-        cate.children[productIndex - 1].sort_index = temp
-    } else {
-        const temp = product.sort_index
-        product.sort_index = cate.children[productIndex + 1].sort_index
-        cate.children[productIndex + 1].sort_index = temp
-    }
-    cate.children.sort((a, b) => a.sort_index - b.sort_index)
+const productMove = (up, cate, product, productIndex) => {
+    const params = { value1: { id: 0, sortIndex: 0 }, value2: { id: 0, sortIndex: 0 } }
+
+    const anotherProduct = up ? cate.children[productIndex - 1] : cate.children[productIndex + 1]
+    const { sort_index: sortIndexAnother, id: idAnother } = anotherProduct
+    const { sort_index: sortIndex, id: idCurrent } = product
+    params.value1 = { id: idAnother, sortIndex: sortIndex }
+    params.value2 = { id: idCurrent, sortIndex: sortIndexAnother }
+
+    uni.showLoading({ title: "", mask: true })
+    updateSort(params).then(res => {
+        getMenuHandler()
+    }).catch(err => {
+        console.log(err);
+        uni.showToast({ title: '修改排序失败', icon: "error" })
+    }).finally(() => {
+        uni.hideLoading()
+    })
 }
 
 const editProduction = (production) => {
@@ -388,7 +398,7 @@ const deleteProductHandler = () => {
         width: calc(100% - @category_width);
         position: relative;
 
-        .unvisible_box {
+        .unvisited_box {
             position: absolute;
             top: 0;
             width: 100%;

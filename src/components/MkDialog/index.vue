@@ -26,8 +26,6 @@ const $props = defineProps({
 })
 const $emits = defineEmits(['confirm', 'update:showDialog'])
 
-console.log($props);
-
 const closeDialog = () => {
     $emits("update:showDialog", false)
 }

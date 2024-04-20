@@ -6,7 +6,7 @@
             <view class="material_container">
                 <view class="material_row" v-for="(item, index) in materialData" :key="index">
                     <input class="material_name" placeholder="食材：如面粉" v-model="item.materialName" />
-                    <input class="material_quantity" placeholder="用量：如100g" v-model="item.materialQuatity" />
+                    <input class="material_quantity" placeholder="用量：如100g" v-model="item.materialQuantity" />
                     <view class="material_delete" v-if="index" @click="deleteMaterial(index)">
                         <image src="../../../static/image/common/close.png" />
                     </view>
@@ -26,7 +26,7 @@
                     </view>
                 </view>
                 <view class="step_img">
-                    <view class="img_avator"></view>
+                    <view class="img_avatar"></view>
                     <view class="img_text">图片非必填</view>
                 </view>
                 <view class="step_description">
@@ -64,11 +64,11 @@ onMounted(() => {
 const productionId = ref(0)
 
 // 用料
-const materialData = ref([{ materialName: '', materialQuatity: '' }])
+const materialData = ref([{ materialName: '', materialQuantity: '' }])
 
 // 添加用料
 const addMaterial = () => {
-    materialData.value.push({ materialName: '', materialQuatity: '' })
+    materialData.value.push({ materialName: '', materialQuantity: '' })
 }
 
 // 删除用料
@@ -227,7 +227,7 @@ const backMenu = () => {
                 align-items: center;
                 margin-top: 30rpx;
 
-                .img_avator {
+                .img_avatar {
                     width: 480rpx;
                     height: 300rpx;
                     background-color: #f7f8fa;

@@ -1,7 +1,7 @@
 <template>
     <view class="production">
         <view class="img_box">
-            <view class="img_avator"></view>
+            <view class="img_avatar"></view>
             <view class="img_text">上传商品主图 非必填</view>
         </view>
         <view class="production_info">
@@ -131,8 +131,13 @@ const saveHandler = () => {
         updateProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value, id: productId.value }).then(res => {
             uni.showToast({ title: '修改商品成功', icon: 'success', mask: true })
             setTimeout(() => {
-                uni.navigateTo({
-                    url: `../productionStep/index?productionId=${res.data.id}`
+                uni.navigateBack({
+                    delta: 1,
+                    success: function () {
+                        const pages = getCurrentPages(); //获取当前页面栈
+                        const prevPage = pages[pages.length - 2]; //获取上一个页面实例对象
+                        prevPage.$vm.refresh(); //调用上一个页面的onLoad方法
+                    }
                 });
             }, 1500);
         }).catch(err => {
@@ -145,8 +150,13 @@ const saveHandler = () => {
         addProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value }).then(res => {
             uni.showToast({ title: '添加商品成功', icon: 'success', mask: true })
             setTimeout(() => {
-                uni.switchTab({
-                    url: `../menu/index`
+                uni.navigateBack({
+                    delta: 1,
+                    success: function () {
+                        const pages = getCurrentPages(); //获取当前页面栈
+                        const prevPage = pages[pages.length - 2]; //获取上一个页面实例对象
+                        prevPage.$vm.refresh(); //调用上一个页面的onLoad方法
+                    }
                 });
             }, 1500);
         }).catch(err => {
@@ -218,7 +228,7 @@ const saveAndNext = () => {
         flex-direction: column;
         align-items: center;
 
-        .img_avator {
+        .img_avatar {
             width: 300rpx;
             height: 300rpx;
             background-color: #fff;
