@@ -1,12 +1,12 @@
 <template>
     <view class="production_step_page">
-        <view class="production_title">番茄</view>
+        <view class="production_title">{{ productionName }}</view>
         <view class="production_material">
             <view class="production_material_tile">用料</view>
             <view class="material_container">
                 <view class="material_row" v-for="(item, index) in materialData" :key="index">
-                    <input class="material_name" placeholder="食材：如面粉" v-model="item.materialName" />
-                    <input class="material_quantity" placeholder="用量：如100g" v-model="item.materialQuantity" />
+                    <input class="material_name" placeholder="食材：如面粉" v-model="item.material_name" />
+                    <input class="material_quantity" placeholder="用量：如100g" v-model="item.material_quantity" />
                     <view class="material_delete" v-if="index" @click="deleteMaterial(index)">
                         <image src="../../../static/image/common/close.png" />
                     </view>
@@ -31,7 +31,7 @@
                 </view>
                 <view class="step_description">
                     <textarea auto-height placeholder="添加步骤说明" placeholder-style="color:#c8cddb"
-                        v-model="item.description" />
+                        v-model="item.step_description" />
                 </view>
             </view>
             <view class="more_btn">
@@ -40,7 +40,7 @@
         </view>
         <view class="operations">
             <view class="back_btn" @click="backMenu">返回首页</view>
-            <view class="save_btn">保存</view>
+            <view class="save_btn" @click="save">保存</view>
         </view>
     </view>
 </template>
@@ -49,26 +49,51 @@
 import { onLoad } from "@dcloudio/uni-app"
 import MkNormalBtn from '@/src/components/MkNormalBtn'
 import { ref, nextTick, onMounted } from 'vue'
+import { getMaterialStep, addMaterialStep, updateMaterialStep } from '@/src/api/menu'
 
 // 获取跳转参数
 onLoad((query) => {
     if (JSON.stringify(query) != "{}") {
-        productionId.value = productionId
+        productionId.value = query.productionId
+        productionName.value = query.productionName
+
     }
 })
 
 onMounted(() => {
-    // TODO 调试材料步骤接口
+    uni.showLoading({ title: "加载中" })
+    getMaterialStep({ id: productionId.value }).then(res => {
+        if (!res.code == 200) return uni.showToast({ title: "出错啦", icon: "error" })
+        const { material, step } = res.data
+        if (step.length) {
+            // 修改
+            isAdd = false
+            materialData.value = !!material.length ? material : [{ material_name: '', material_quantity: '' }]
+            stepData.value = step
+        } else {
+            // 新增
+            isAdd = true
+        }
+    }).catch(err => {
+
+    }).finally(() => {
+        uni.hideLoading()
+    })
 })
 
 const productionId = ref(0)
 
+const productionName = ref('')
+
+// 新增或者修改 true为新增 false为修改
+let isAdd = true
+
 // 用料
-const materialData = ref([{ materialName: '', materialQuantity: '' }])
+const materialData = ref([{ material_name: '', material_quantity: '' }])
 
 // 添加用料
 const addMaterial = () => {
-    materialData.value.push({ materialName: '', materialQuantity: '' })
+    materialData.value.push({ material_name: '', material_quantity: '' })
 }
 
 // 删除用料
@@ -78,13 +103,13 @@ const deleteMaterial = (index) => {
 
 // 步骤
 const stepData = ref([{
-    description: "",
-    imgUrl: "",
+    step_description: "",
+    step_img: ""
 }])
 
 // 添加步骤
 const addStep = () => {
-    stepData.value.push({ description: '', imgUrl: "" })
+    stepData.value.push({ step_description: '', step_img: "" })
     nextTick(() => {
         uni.pageScrollTo({
             scrollTop: 2000000,    //滚动到页面的目标位置（单位px）
@@ -111,6 +136,58 @@ const backMenu = () => {
     uni.switchTab({
         url: `../menu/index`
     });
+}
+
+// 保存
+const save = () => {
+    if (!stepData.value.length) uni.showToast({ title: '请至少设置一个步骤', icon: "none", duration: 2000 })
+    // 步骤说明不能为空
+    for (let index = 0; index < stepData.value.length; index++) {
+        const step = stepData.value[index];
+        if (!step.step_description) return uni.showToast({ title: `步骤${index + 1}的说明不能为空`, icon: "none", duration: 2000 })
+    }
+    // 过滤空用料
+    materialData.value = materialData.value.filter(material => {
+        if (material.material_name || material.material_quantity) {
+            return material
+        }
+    })
+    // 如果用量存在, 则材料名不能为空
+    for (let index = 0; index < materialData.value.length; index++) {
+        const material = materialData.value[index];
+        if (material.material_quantity && !material.material_name) return uni.showToast({ title: "用料名不能为空", icon: "none", duration: 2000 })
+    }
+
+    const params = { material: materialData.value, step: stepData.value, id: productionId.value }
+
+    uni.showLoading({ title: '正在保存' })
+    if (isAdd) {
+        addMaterialStep(params).then(res => {
+            uni.hideLoading()
+            uni.showToast({ title: "保存成功", icon: "success" })
+            setTimeout(() => {
+                uni.switchTab({
+                    url: `../menu/index`
+                });
+            }, 1500);
+        }).catch(err => {
+            uni.hideLoading()
+            uni.showToast({ title: "保存失败", icon: "error" })
+        })
+    } else {
+        updateMaterialStep(params).then(res => {
+            uni.hideLoading()
+            uni.showToast({ title: "保存成功", icon: "success" })
+            setTimeout(() => {
+                uni.switchTab({
+                    url: `../menu/index`,
+                });
+            }, 1500);
+        }).catch(err => {
+            uni.hideLoading()
+            uni.showToast({ title: "保存失败", icon: "error" })
+        })
+    }
 }
 
 

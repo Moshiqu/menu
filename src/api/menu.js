@@ -14,3 +14,12 @@ export const deleteProduct = options => request({ url: "/api/menu/deleteProduct"
 
 // 修改商品排序
 export const updateSort = options => request({ url: "/api/menu/updateSort", method: "POST", data: options })
+
+// 获取材料步骤
+export const getMaterialStep = options => request({ url: "/api/menu/getMaterialStep", method: "GET", data: options })
+
+// 新增材料步骤
+export const addMaterialStep = options => request({ url: "/api/menu/addMaterialStep", method: "POST", data: options })
+
+// 修改材料步骤
+export const updateMaterialStep = options => request({ url: "/api/menu/updateMaterialStep", method: "POST", data: options })

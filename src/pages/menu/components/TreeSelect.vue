@@ -279,7 +279,6 @@ const productMove = (up, cate, product, productIndex) => {
     updateSort(params).then(res => {
         getMenuHandler()
     }).catch(err => {
-        console.log(err);
         uni.showToast({ title: '修改排序失败', icon: "error" })
     }).finally(() => {
         uni.hideLoading()

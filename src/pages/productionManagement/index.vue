@@ -28,7 +28,7 @@
                 </view>
             </view>
             <view class="production_description" style="padding-bottom: 24rpx;position: relative;">
-                <view class="label" @click="() => console.log(productName)">
+                <view class="label">
                     描述
                 </view>
                 <MkTextarea class="editor textarea_editor" textAlign="right" v-model:textareaValue="productDescription"
@@ -129,41 +129,41 @@ const saveHandler = () => {
 
     if (productId.value) {
         updateProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value, id: productId.value }).then(res => {
-            uni.showToast({ title: '修改商品成功', icon: 'success', mask: true })
+            uni.hideLoading()
+            uni.showToast({ title: '修改商品成功', icon: 'success', mask: true, duration: 2000 })
+            const pages = getCurrentPages(); //获取当前页面栈
+            const prevPage = pages[pages.length - 2]; //获取上一个页面实例对象
+
             setTimeout(() => {
                 uni.navigateBack({
                     delta: 1,
-                    success: function () {
-                        const pages = getCurrentPages(); //获取当前页面栈
-                        const prevPage = pages[pages.length - 2]; //获取上一个页面实例对象
-                        prevPage.$vm.refresh(); //调用上一个页面的onLoad方法
+                    complete: () => {
+                        prevPage.$vm.refresh(); //调用上一个页面的方法
                     }
                 });
-            }, 1500);
+            }, 2000);
         }).catch(err => {
-            uni.showToast({ title: '修改商品失败', icon: 'error', mask: true })
-        }).finally(() => {
             uni.hideLoading()
-
+            uni.showToast({ title: '修改商品失败', icon: 'error', mask: true, duration: 2000 })
         })
     } else {
         addProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value }).then(res => {
-            uni.showToast({ title: '添加商品成功', icon: 'success', mask: true })
+            uni.hideLoading()
+            uni.showToast({ title: '添加商品成功', icon: 'success', mask: true, duration: 2000 })
+            const pages = getCurrentPages(); //获取当前页面栈
+            const prevPage = pages[pages.length - 2]; //获取上一个页面实例对象
             setTimeout(() => {
                 uni.navigateBack({
                     delta: 1,
-                    success: function () {
-                        const pages = getCurrentPages(); //获取当前页面栈
-                        const prevPage = pages[pages.length - 2]; //获取上一个页面实例对象
-                        prevPage.$vm.refresh(); //调用上一个页面的onLoad方法
+                    complete: () => {
+
+                        prevPage.$vm.refresh(); //调用上一个页面的方法
                     }
                 });
-            }, 1500);
+            }, 2000);
         }).catch(err => {
-            uni.showToast({ title: '添加商品失败', icon: 'error', mask: true })
-        }).finally(() => {
             uni.hideLoading()
-
+            uni.showToast({ title: '添加商品失败', icon: 'error', mask: true })
         })
     }
 
@@ -182,30 +182,32 @@ const saveAndNext = () => {
     uni.showLoading({ title: '正在保存', icon: 'loading', mask: true })
     const cateId = cateList.value[cateIndex.value].id
     if (productId.value) {
-        updateProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value }).then(res => {
+        updateProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value, id: productId.value }).then(res => {
+            uni.hideLoading()
             uni.showToast({ title: '修改商品成功', icon: 'success', mask: true })
             setTimeout(() => {
-                uni.navigateTo({
-                    url: `../productionStep/index?productionId=${res.data.id}`
+                uni.reLaunch({
+                    url: `../productionStep/index?productionId=${res.data.id}&productionName=${productName.value}`
                 });
             }, 1500);
         }).catch(err => {
+            uni.hideLoading()
             uni.showToast({ title: '修改商品失败', icon: 'error', mask: true })
         }).finally(() => {
             uni.hideLoading()
         })
     } else {
         addProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value }).then(res => {
+            uni.hideLoading()
             uni.showToast({ title: '添加商品成功', icon: 'success', mask: true })
             setTimeout(() => {
-                uni.redirectTo({
-                    url: `../productionStep/index?productionId=${res.data.id}`
+                uni.reLaunch({
+                    url: `../productionStep/index?productionId=${res.data.id}&productionName=${productName.value}`
                 });
             }, 1500);
         }).catch(err => {
-            uni.showToast({ title: '添加商品失败', icon: 'error', mask: true })
-        }).finally(() => {
             uni.hideLoading()
+            uni.showToast({ title: '添加商品失败', icon: 'error', mask: true })
         })
     }
 
