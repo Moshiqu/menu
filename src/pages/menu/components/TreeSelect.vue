@@ -57,7 +57,7 @@
             <view>{{ cartNum }}</view>
             <image src="../../../../static/image/menu/bowl.png" class="bowl" />
         </view>
-        <MkDialog v-model:showDialog="showDialog" @confirm="deleteProductHandler" />
+        <MkDialog v-model:showDialog="showDialog" @confirm="deleteProductHandler" :title="'提示'" :description="`是否确认删除该商品!`" />
         <MkLoading :loading="isLoading" showText text="正在删除" />
     </view>
 </template>

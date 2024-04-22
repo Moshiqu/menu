@@ -23,3 +23,15 @@ export const addMaterialStep = options => request({ url: "/api/menu/addMaterialS
 
 // 修改材料步骤
 export const updateMaterialStep = options => request({ url: "/api/menu/updateMaterialStep", method: "POST", data: options })
+
+// 新增分类
+export const addCategory = options => request({ url: "/api/menu/addCategory", method: "POST", data: options })
+
+// 修改分类
+export const updateCategory = options => request({ url: "/api/menu/updateCategory", method: "POST", data: options })
+
+// 修改分类排序
+export const updateCategorySort = options => request({ url: "/api/menu/updateCategorySort", method: "POST", data: options })
+
+// 删除分类
+export const deleteCategory = options => request({ url: "/api/menu/deleteCategory", method: "DELETE", data: options })

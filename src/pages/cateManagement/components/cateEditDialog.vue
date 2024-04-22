@@ -26,7 +26,7 @@ const $emits = defineEmits(['update:show', 'confirm'])
 const cateName = ref('')
 
 onMounted(() => {
-    cateName.value = $props.cate ? $props.cate.name : ''
+    cateName.value = $props.cate ? $props.cate.category_name : ''
 })
 
 const cancel = () => {

@@ -140,7 +140,7 @@ const backMenu = () => {
 
 // 保存
 const save = () => {
-    if (!stepData.value.length) uni.showToast({ title: '请至少设置一个步骤', icon: "none", duration: 2000 })
+    if (!stepData.value.length || !stepData.value[0].step_description) return uni.showToast({ title: '请至少设置一个步骤', icon: "none", duration: 2000 })
     // 步骤说明不能为空
     for (let index = 0; index < stepData.value.length; index++) {
         const step = stepData.value[index];
