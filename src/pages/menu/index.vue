@@ -40,16 +40,6 @@ const addHandler = () => {
     });
 }
 
-const refresh = () => {
-    if(treeSelectRef.value){
-        treeSelectRef.value.getMenuHandler()
-    }
-}
-
-defineExpose({
-    refresh
-})
-
 </script>
 
 <style lang="less" scoped>

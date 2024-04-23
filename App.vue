@@ -1,7 +1,11 @@
 <script>
+import { useMenuStore } from "@/src/store/menu"
+
 export default {
     onLaunch: function () {
         console.log('App Launch')
+        const menuStore = useMenuStore()
+        menuStore.getMenuListByApi()
     },
     onShow: function () {
         uni.getSystemInfo({
@@ -20,11 +24,11 @@ export default {
                 //width:  胶囊宽度
                 // console.log(menuButtonInfo.width, menuButtonInfo.height, menuButtonInfo.top)
                 // console.log('计算胶囊右侧距离屏幕右边距离', result.screenWidth - menuButtonInfo.right)
-                let menuWidth = menuButtonInfo.width 
-                let menuHeight = menuButtonInfo.height 
-                let menuBorderRadius = menuButtonInfo.height / 2 
+                let menuWidth = menuButtonInfo.width
+                let menuHeight = menuButtonInfo.height
+                let menuBorderRadius = menuButtonInfo.height / 2
                 let menuRight = result.screenWidth - menuButtonInfo.right
-                let menuTop = menuButtonInfo.top 
+                let menuTop = menuButtonInfo.top
                 let contentTop = result.statusBarHeight + 44
 
                 let menuInfo = {

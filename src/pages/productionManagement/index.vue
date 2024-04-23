@@ -131,15 +131,11 @@ const saveHandler = () => {
         updateProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value, id: productId.value }).then(res => {
             uni.hideLoading()
             uni.showToast({ title: '修改商品成功', icon: 'success', mask: true, duration: 2000 })
-            const pages = getCurrentPages(); //获取当前页面栈
-            const prevPage = pages[pages.length - 2]; //获取上一个页面实例对象
-
+        
+            menuStore.getMenuListByApi()
             setTimeout(() => {
-                uni.navigateBack({
-                    delta: 1,
-                    complete: () => {
-                        prevPage.$vm.refresh(); //调用上一个页面的方法
-                    }
+                uni.switchTab({
+                    url: `../menu/index`
                 });
             }, 2000);
         }).catch(err => {
@@ -150,15 +146,11 @@ const saveHandler = () => {
         addProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value }).then(res => {
             uni.hideLoading()
             uni.showToast({ title: '添加商品成功', icon: 'success', mask: true, duration: 2000 })
-            const pages = getCurrentPages(); //获取当前页面栈
-            const prevPage = pages[pages.length - 2]; //获取上一个页面实例对象
+            
+            menuStore.getMenuListByApi()
             setTimeout(() => {
-                uni.navigateBack({
-                    delta: 1,
-                    complete: () => {
-
-                        prevPage.$vm.refresh(); //调用上一个页面的方法
-                    }
+                uni.switchTab({
+                    url: `../menu/index`
                 });
             }, 2000);
         }).catch(err => {

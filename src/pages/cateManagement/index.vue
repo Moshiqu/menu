@@ -125,9 +125,6 @@ const deleteCate = () => {
     })
 }
 
-// TODO 返回首页 刷新数据
-
-
 </script>
 
 <style lang="less" scoped>

@@ -2,7 +2,7 @@
     <view class="menu_content">
         <view class="category">
             <scroll-view scroll-y style="height: 100%;" scroll-with-animation>
-                <view :class="['tab', parentActiveId == item.id ? 'active' : '']" v-for="item in treeData" :key="item.id"
+                <view :class="['tab', parentActiveId == item.id ? 'active' : '']" v-for="item in menuStore.menuList" :key="item.id"
                     @click="parentClickHandler(item.id)">
                     {{ item.category_name }}
                     <view class="dot" v-if="calDot(item.children)">{{ calDot(item.children) }}</view>
@@ -19,7 +19,7 @@
             <view class="unvisited_box"></view> 
             <scroll-view scroll-y style="height: 100%;" :scroll-into-view="intoParentId" scroll-with-animation
                 class="scroll-view" @scroll="handleScroll">
-                <view class="cate" v-for="item in treeData" :key="item.id" :id="'parent_' + item.id">
+                <view class="cate" v-for="item in menuStore.menuList" :key="item.id" :id="'parent_' + item.id">
                     <view class="cate_title" v-if="item.children.length">{{ item.category_name }}</view>
                     <view class="product_card" v-for="(product, productIndex) in item.children" :key="product.id">
                         <image src="../../../../static/image/default_img.jpg" class="product_img"></image>
@@ -71,15 +71,9 @@ import { getMenu } from '@/src/api/menu'
 import { deleteProduct } from '@/src/api/menu';
 import { updateSort } from '@/src/api/menu'
 
+
 // 当前组件实例
 const currentInstance = getCurrentInstance()
-
-// 树形结构响应式 并存入pinia
-const treeData = ref([])
-
-onMounted(() => {
-    getMenuHandler()
-})
 
 import { useMenuStore } from "@/src/store/menu"
 const menuStore = useMenuStore()
@@ -88,17 +82,12 @@ const menuStore = useMenuStore()
 const getMenuHandler = () => {
     uni.showLoading({ title: '正在加载...', icon: 'loading', mask: true })
     getMenu().then(res => {
-        treeData.value = res.data
         menuStore.setMenuList(res.data)
     }).catch(err => {
     }).finally(() => {
         uni.hideLoading()
     })
 }
-
-defineExpose({
-    getMenuHandler
-})
 
 // 激活的分类id
 const parentActiveId = ref(1)
@@ -108,7 +97,7 @@ const intoParentId = ref(`parent_1`)
 
 // 右侧产品栏最顶部的分类id
 nextTick(() => {
-    treeData.value.forEach(item => {
+    menuStore.menuList.forEach(item => {
         if (item.children.length) {
             uni.createIntersectionObserver(currentInstance).relativeTo('.unvisited_box').observe(`#parent_${item.id}`, (res) => {
                 const { id } = res
@@ -134,7 +123,7 @@ const parentClickHandler = (id) => {
 // 添加产品和减少产品
 // 购物车列表
 const cartList = computed(() => {
-    return treeData.value.filter(cate => {
+    return menuStore.menuList.filter(cate => {
         const cateSelect = cate.children.filter(product => {
             return !!product.selectNum
         })
