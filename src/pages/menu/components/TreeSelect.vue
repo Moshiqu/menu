@@ -2,8 +2,8 @@
     <view class="menu_content">
         <view class="category">
             <scroll-view scroll-y style="height: 100%;" scroll-with-animation>
-                <view :class="['tab', parentActiveId == item.id ? 'active' : '']" v-for="item in menuStore.menuList" :key="item.id"
-                    @click="parentClickHandler(item.id)">
+                <view :class="['tab', parentActiveId == item.id ? 'active' : '']" v-for="item in menuStore.menuList"
+                    :key="item.id" @click="parentClickHandler(item.id)">
                     {{ item.category_name }}
                     <view class="dot" v-if="calDot(item.children)">{{ calDot(item.children) }}</view>
                 </view>
@@ -16,9 +16,9 @@
             </scroll-view>
         </view>
         <view class="product" id="product_box">
-            <view class="unvisited_box"></view> 
+            <view class="unvisited_box"></view>
             <scroll-view scroll-y style="height: 100%;" :scroll-into-view="intoParentId" scroll-with-animation
-                class="scroll-view" @scroll="handleScroll">
+                class="scroll-view">
                 <view class="cate" v-for="item in menuStore.menuList" :key="item.id" :id="'parent_' + item.id">
                     <view class="cate_title" v-if="item.children.length">{{ item.category_name }}</view>
                     <view class="product_card" v-for="(product, productIndex) in item.children" :key="product.id">
@@ -57,7 +57,8 @@
             <view>{{ cartNum }}</view>
             <image src="../../../../static/image/menu/bowl.png" class="bowl" />
         </view>
-        <MkDialog v-model:showDialog="showDialog" @confirm="deleteProductHandler" :title="'提示'" :description="`是否确认删除该商品!`" />
+        <MkDialog v-model:showDialog="showDialog" @confirm="deleteProductHandler" :title="'提示'"
+            :description="`是否确认删除该商品!`" />
         <MkLoading :loading="isLoading" showText text="正在删除" />
     </view>
 </template>
@@ -107,7 +108,6 @@ nextTick(() => {
     })
 })
 
-
 // 分类栏点击事件
 const parentClickHandler = (id) => {
     parentActiveId.value = id
@@ -121,6 +121,38 @@ const parentClickHandler = (id) => {
 }
 
 // 添加产品和减少产品
+// 添加 减少
+
+// TODO 购物车功能
+const plusMinusHandler = throttle((product, type = 'plus') => {
+    switch (type) {
+        case 'plus':
+            plusAnimationHandler(product.id)
+            if (!product.selectNum) {
+                product.selectNum = 1
+            } else {
+                product.selectNum++
+            }
+            break;
+
+        case 'minus':
+            product.selectNum--
+            break;
+    }
+}, 600)
+
+const calDot = (cate) => {
+    let num = 0
+
+    cate.forEach(product => {
+        if (product.selectNum) {
+            num += product.selectNum
+        }
+    })
+
+    return num
+}
+
 // 购物车列表
 const cartList = computed(() => {
     return menuStore.menuList.filter(cate => {
@@ -160,7 +192,6 @@ const isAnimationRunning = ref(false)
 const animationProductId = ref(-1)
 const flyItemStyle = ref({})
 const flyBallStyle = ref({})
-let viewScrollTop = 0
 
 const plusAnimationHandler = async (id) => {
     animationProductId.value = id
@@ -174,7 +205,6 @@ const plusAnimationHandler = async (id) => {
     const offsetY = boundCart.top + boundCart.height / 2 - (boundBtn.top + boundBtn.height / 2) - 10;
 
     // 页面滚动尺寸
-    const scrollTop = 0;
     const scrollLeft = 0;
     if (!isAnimationRunning.value) {
         // 购物车图形出现与初始定位
@@ -212,42 +242,6 @@ const getBoundingClientRect = async (selector) => {
             }
         }).exec();
     })
-}
-
-// 监听滚动
-const handleScroll = (event) => {
-    const { scrollTop } = event.detail
-    viewScrollTop = scrollTop
-}
-
-// 添加 减少
-const plusMinusHandler = throttle((product, type = 'plus') => {
-    switch (type) {
-        case 'plus':
-            plusAnimationHandler(product.id)
-            if (!product.selectNum) {
-                product.selectNum = 1
-            } else {
-                product.selectNum++
-            }
-            break;
-
-        case 'minus':
-            product.selectNum--
-            break;
-    }
-}, 600)
-
-const calDot = (cate) => {
-    let num = 0
-
-    cate.forEach(product => {
-        if (product.selectNum) {
-            num += product.selectNum
-        }
-    })
-
-    return num
 }
 
 // 编辑
