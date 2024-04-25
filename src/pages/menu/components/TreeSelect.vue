@@ -5,7 +5,7 @@
                 <view :class="['tab', parentActiveId == item.id ? 'active' : '']" v-for="item in menuStore.menuList"
                     :key="item.id" @click="parentClickHandler(item.id)">
                     {{ item.category_name }}
-                    <view class="dot" v-if="calDot(item.children)">{{ calDot(item.children) }}</view>
+                    <view class="dot" v-if="calDot(item.id)">{{ calDot(item.id) }}</view>
                 </view>
                 <view :class="['tab category_set', parentActiveId === -1 ? 'active' : '']" style="color: #2678fa;"
                     @click="parentClickHandler(-1)">
@@ -28,13 +28,13 @@
                             <view class="product_desc">{{ product.product_description }}</view>
                             <view class="product_sale" v-if="!isEdit">销量:{{ product.sold_num || 0 }}</view>
                             <view class="product_operation" v-if="!isEdit">
-                                <template v-if="product.selectNum">
+                                <template v-if="calSelectNum(item.id, product.id)">
                                     <image src="../../../../static/image/menu/icon_minus.png" class="btn"
-                                        @click="plusMinusHandler(product, 'minus')" />
-                                    <text class="select_text">{{ product.selectNum }}</text>
+                                        @click="plusMinusHandler(item.id, product, 'minus')" />
+                                    <text class="select_text">{{ calSelectNum(item.id, product.id) }}</text>
                                 </template>
                                 <image src="../../../../static/image/menu/icon_plus.png" class="btn plus"
-                                    @click="plusMinusHandler(product, 'plus')" :id="`startBtn_${product.id}`" />
+                                    @click="plusMinusHandler(item.id, product, 'plus')" :id="`startBtn_${product.id}`" />
                                 <view class="fly_item" :id="`flyItem_${product.id}`"
                                     :style="product.id == animationProductId ? flyItemStyle : {}">
                                     <view class="ball" :id="`flyBall_${product.id}`"
@@ -54,7 +54,7 @@
             </scroll-view>
         </view>
         <view class="cart" @click="showCart" id="cart">
-            <view>{{ cartNum }}</view>
+            <view>{{ menuStore.allCartNum }}</view>
             <image src="../../../../static/image/menu/bowl.png" class="bowl" />
         </view>
         <MkDialog v-model:showDialog="showDialog" @confirm="deleteProductHandler" :title="'提示'"
@@ -91,6 +91,7 @@ const getMenuHandler = () => {
 }
 
 // 激活的分类id
+// TODO 初始值需要设置为menulist数组第一个的id
 const parentActiveId = ref(1)
 
 // 右侧产品需要滚动到的id
@@ -123,69 +124,33 @@ const parentClickHandler = (id) => {
 // 添加产品和减少产品
 // 添加 减少
 
-// TODO 购物车功能
-const plusMinusHandler = throttle((product, type = 'plus') => {
+const plusMinusHandler = throttle((categoryId, product, type = 'plus') => {
     switch (type) {
         case 'plus':
             plusAnimationHandler(product.id)
-            if (!product.selectNum) {
-                product.selectNum = 1
-            } else {
-                product.selectNum++
-            }
+            menuStore.addToCart(categoryId, product)
             break;
 
         case 'minus':
-            product.selectNum--
+            menuStore.minusFromCart(categoryId, product)
             break;
     }
-}, 600)
+}, 700)
 
-const calDot = (cate) => {
-    let num = 0
+const calDot = (cateId) => {
+    const cartCate = menuStore.cartList.find(cate => cate.id === cateId)
 
-    cate.forEach(product => {
-        if (product.selectNum) {
-            num += product.selectNum
-        }
-    })
-
-    return num
+    return cartCate ? cartCate.children.length : 0
 }
 
-// 购物车列表
-const cartList = computed(() => {
-    return menuStore.menuList.filter(cate => {
-        const cateSelect = cate.children.filter(product => {
-            return !!product.selectNum
-        })
-        return !!cateSelect.length
-    })
-})
+const calSelectNum = (cateId, productId) => {
+    return menuStore.cartList.find(cate => cate.id === cateId)?.children.find(item => item.id == productId)?.selectNum
+}
 
-// 已选择的产品数量
-const cartNum = computed(() => {
-    let num = 0
-    cartList.value.forEach(cate => {
-        if (cate.children.length) {
-            cate.children.forEach(item => {
-                if (item.selectNum) {
-                    num += item.selectNum
-                }
-            })
-        }
-    })
-
-    return num
-})
-
+// 购物车
 const showCart = () => {
     console.log(cartList);
 }
-
-watch(cartList, (nv, ov) => {
-
-})
 
 // 添加 动画
 const isAnimationRunning = ref(false)
