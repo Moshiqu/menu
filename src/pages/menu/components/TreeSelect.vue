@@ -91,23 +91,30 @@ const getMenuHandler = () => {
 }
 
 // 激活的分类id
-// TODO 初始值需要设置为menulist数组第一个的id
-const parentActiveId = ref(1)
+const parentActiveId = ref(-0)
+
+watch(() => menuStore.menuList, (nv, ov) => {
+    if (nv.length) {
+        parentActiveId.value = menuStore.menuList[0].id
+        intoParentId.value = `parent_${menuStore.menuList[0].id}`
+        console.log(parentActiveId.value, intoParentId.value);
+
+        // 右侧产品栏最顶部的分类id
+        nextTick(() => {
+            menuStore.menuList.forEach(item => {
+                if (item.children.length) {
+                    uni.createIntersectionObserver(currentInstance).relativeTo('.unvisited_box').observe(`#parent_${item.id}`, (res) => {
+                        const { id } = res
+                        parentActiveId.value = id.replace(/[^\d]/g, "")
+                    })
+                }
+            })
+        })
+    }
+})
 
 // 右侧产品需要滚动到的id
-const intoParentId = ref(`parent_1`)
-
-// 右侧产品栏最顶部的分类id
-nextTick(() => {
-    menuStore.menuList.forEach(item => {
-        if (item.children.length) {
-            uni.createIntersectionObserver(currentInstance).relativeTo('.unvisited_box').observe(`#parent_${item.id}`, (res) => {
-                const { id } = res
-                parentActiveId.value = id.replace(/[^\d]/g, "")
-            })
-        }
-    })
-})
+const intoParentId = ref(`parent_0`)
 
 // 分类栏点击事件
 const parentClickHandler = (id) => {
