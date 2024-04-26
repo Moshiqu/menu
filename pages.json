@@ -1,4 +1,5 @@
 {
+    // TODO 调整项目目录 抽离src目录的所有子目录到根目录下，
     "pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
         {
             "path": "src/pages/menu/index",
