@@ -20,8 +20,8 @@
             <scroll-view scroll-y style="height: 100%;" :scroll-into-view="intoParentId" scroll-with-animation
                 class="scroll-view">
                 <view class="cate" v-for="item in menuStore.menuList" :key="item.id" :id="'parent_' + item.id">
-                    <view class="cate_title" v-if="item.children.length">{{ item.category_name }}</view>
-                    <view class="product_card" v-for="(product, productIndex) in item.children" :key="product.id">
+                    <view class="cate_title">{{ item.category_name }}</view>
+                    <view class="product_card" v-for="(product, productIndex) in item.children" :key="product.id" v-if="item.children.length">
                         <image src="../../../../static/image/default_img.jpg" class="product_img"></image>
                         <view class="product_info">
                             <view class="product_title">{{ product.product_name }}</view>
@@ -49,6 +49,9 @@
                                 <text @click="showDialog = true, currentProduct = product">删除</text>
                             </view>
                         </view>
+                    </view>
+                    <view class="no_product" v-else>
+                        <image src="../../../../static/image/no_data_img.jpg" class="no_data_img"></image>
                     </view>
                 </view>
             </scroll-view>
@@ -483,6 +486,15 @@ const deleteProductHandler = () => {
                         }
                     }
 
+                }
+            }
+
+            .no_product{
+                .no_data_img{
+                    width: 400rpx;
+                    height: 200rpx;
+                    margin: 20rpx 0;
+                    border-radius: 20rpx;
                 }
             }
         }
