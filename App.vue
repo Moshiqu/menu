@@ -1,5 +1,5 @@
 <script>
-import { useMenuStore } from "@/src/store/menu"
+import { useMenuStore } from "./store/menu"
 
 export default {
     onLaunch: function () {

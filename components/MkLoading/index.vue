@@ -1,7 +1,7 @@
 <template>
     <view class="mk-loading" v-if="loading">
         <view class="loading-content">
-            <image class="loading-icon" src="../../../static/image/common/loading.png" />
+            <image class="loading-icon" src="/static/image/common/loading.png" />
             <view class="loading-text" v-if="showText">
                 {{ text }}…
             </view>
