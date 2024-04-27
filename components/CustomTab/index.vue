@@ -4,13 +4,13 @@
             <view>鼠鼠的个人菜单</view>
             <view class="btns">
                 <view>
-                    <image src="../../../static/image/menu/search.png" alt="" />
+                    <image src="/static/image/menu/search.png" alt="" />
                 </view>
                 <view>
-                    <image src="../../../static/image/menu/QR.png" alt="" />
+                    <image src="/static/image/menu/QR.png" alt="" />
                 </view>
                 <view>
-                    <image src="../../../static/image/menu/share.png" alt="" />
+                    <image src="/static/image/menu/share.png" alt="" />
                 </view>
             </view>
         </view>

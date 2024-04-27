@@ -1,4 +1,4 @@
-import { request } from '@/src/utils/request';
+import { request } from '/utils/request';
 
 // 获取菜单
 export const getMenu = (options) => request({ url: '/api/menu/getMenu', method: 'GET', data: options })

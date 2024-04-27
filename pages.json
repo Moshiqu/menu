@@ -1,39 +1,38 @@
 {
-    // TODO 调整项目目录 抽离src目录的所有子目录到根目录下，
     "pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
         {
-            "path": "src/pages/menu/index",
+            "path": "pages/menu/index",
             "style": {
                 // "navigationBarTitleText": "鼠鼠个人菜单",
                 "navigationStyle": "custom"
             }
         },
         {
-            "path": "src/pages/order/index",
+            "path": "pages/order/index",
             "style": {
                 "navigationBarTitleText": "uni-app"
             }
         },
         {
-            "path": "src/pages/user/index",
+            "path": "pages/user/index",
             "style": {
                 "navigationBarTitleText": "uni-app"
             }
         },
         {
-            "path": "src/pages/cateManagement/index",
+            "path": "pages/cateManagement/index",
             "style": {
                 "navigationBarTitleText": "分类管理"
             }
         },
         {
-            "path": "src/pages/productionManagement/index",
+            "path": "pages/productionManagement/index",
             "style": {
                 "navigationBarTitleText": "商品管理"
             }
         },
         {
-            "path": "src/pages/productionStep/index",
+            "path": "pages/productionStep/index",
             "style": {
                 "navigationBarTitleText": "商品步骤"
             }
@@ -62,19 +61,19 @@
         "color": "#444444",
         "list": [
             {
-                "pagePath": "src/pages/menu/index",
+                "pagePath": "pages/menu/index",
                 "iconPath": "static/image/tabbar/menu.png",
                 "selectedIconPath": "static/image/tabbar/menu_active.png",
                 "text": "菜单"
             },
             {
-                "pagePath": "src/pages/order/index",
+                "pagePath": "pages/order/index",
                 "iconPath": "static/image/tabbar/order.png",
                 "selectedIconPath": "static/image/tabbar/order_active.png",
                 "text": "订单"
             },
             {
-                "pagePath": "src/pages/user/index",
+                "pagePath": "pages/user/index",
                 "iconPath": "static/image/tabbar/user.png",
                 "selectedIconPath": "/static/image/tabbar/user_active.png",
                 "text": "我的"

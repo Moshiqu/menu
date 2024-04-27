@@ -8,7 +8,7 @@
                     <input class="material_name" placeholder="食材：如面粉" v-model="item.material_name" />
                     <input class="material_quantity" placeholder="用量：如100g" v-model="item.material_quantity" />
                     <view class="material_delete" v-if="index" @click="deleteMaterial(index)">
-                        <image src="../../../static/image/common/close.png" />
+                        <image src="/static/image/common/close.png" />
                     </view>
                 </view>
                 <view class="more_btn">
@@ -21,8 +21,8 @@
                 <view class="step_title">
                     <view class="step_num">步骤 {{ index + 1 }}</view>
                     <view class="step_operation" v-if="index">
-                        <image src="../../../static/image/common/up.png" @click="exchangeStep(index)" />
-                        <image src="../../../static/image/common/delete.png" @click="deleteStep(index)" />
+                        <image src="/static/image/common/up.png" @click="exchangeStep(index)" />
+                        <image src="/static/image/common/delete.png" @click="deleteStep(index)" />
                     </view>
                 </view>
                 <view class="step_img">
@@ -47,9 +47,9 @@
 
 <script setup>
 import { onLoad } from "@dcloudio/uni-app"
-import MkNormalBtn from '@/src/components/MkNormalBtn'
+import MkNormalBtn from '/components/MkNormalBtn'
 import { ref, nextTick, onMounted } from 'vue'
-import { getMaterialStep, addMaterialStep, updateMaterialStep } from '@/src/api/menu'
+import { getMaterialStep, addMaterialStep, updateMaterialStep } from '/api/menu'
 
 // 获取跳转参数
 onLoad((query) => {
@@ -134,7 +134,7 @@ const deleteStep = (index) => {
 // 返回首页
 const backMenu = () => {
     uni.switchTab({
-        url: `../menu/index`
+        url: `/pages/menu/index`
     });
 }
 
@@ -167,7 +167,7 @@ const save = () => {
             uni.showToast({ title: "保存成功", icon: "success" })
             setTimeout(() => {
                 uni.switchTab({
-                    url: `../menu/index`
+                    url: `/pages/menu/index`
                 });
             }, 1500);
         }).catch(err => {
@@ -180,7 +180,7 @@ const save = () => {
             uni.showToast({ title: "保存成功", icon: "success" })
             setTimeout(() => {
                 uni.switchTab({
-                    url: `../menu/index`,
+                    url: `/pages/menu/index`,
                 });
             }, 1500);
         }).catch(err => {
@@ -319,7 +319,7 @@ const save = () => {
                         top: 50%;
                         left: 50%;
                         transform: translate(-50%, -50%);
-                        background-image: url(../../../static/image/menu/icon_camera.png);
+                        background-image: url(/static/image/menu/icon_camera.png);
                         background-size: 100% 100%;
                     }
                 }

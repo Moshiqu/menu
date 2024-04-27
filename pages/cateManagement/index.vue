@@ -3,9 +3,9 @@
         <view class="cate_item" v-for="(cate, index) in menuStore.cateList" :key="cate.id">
             <view class="cate_name" @click="modifiedHandler(cate)">{{ cate.category_name }}</view>
             <view class="cate_operation">
-                <image src="../../../static/image/common/up.png" @click="move(true, cate, index)" />
-                <image src="../../../static/image/common/up.png" class="down_icon" @click="move(false, cate, index)" />
-                <image src="../../../static/image/common/delete.png" @click="showDeleteDialog = true, currentCate = cate" />
+                <image src="/static/image/common/up.png" @click="move(true, cate, index)" />
+                <image src="/static/image/common/up.png" class="down_icon" @click="move(false, cate, index)" />
+                <image src="/static/image/common/delete.png" @click="showDeleteDialog = true, currentCate = cate" />
             </view>
         </view>
         <view class="cate_btn" @click="addCate">新建分类</view>
@@ -17,11 +17,11 @@
 <script setup>
 import { ref } from 'vue'
 import CateEditDialog from "./components/cateEditDialog.vue"
-import { addCategory, updateCategory, updateCategorySort, deleteCategory } from '@/src/api/menu'
-import MkDialog from '@/src/components/MkDialog'
+import { addCategory, updateCategory, updateCategorySort, deleteCategory } from '/api/menu'
+import MkDialog from '/components/MkDialog'
 
 // 从pinia中获取菜单列表
-import { useMenuStore } from "@/src/store/menu";
+import { useMenuStore } from "/store/menu";
 const menuStore = useMenuStore()
 
 const showDialog = ref(false)
@@ -41,7 +41,7 @@ const addCate = () => {
 }
 
 // 获取用户信息
-import { userUserInfoStore } from "@/src/store/userInfo";
+import { userUserInfoStore } from "/store/userInfo";
 const userInfoStore = userUserInfoStore()
 
 // 保存分类

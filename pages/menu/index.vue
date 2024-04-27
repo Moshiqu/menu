@@ -3,7 +3,7 @@
         :style="{ paddingTop: menuTop + menuHeight + 'px', height: `calc(100vh - ${menuTop}px - ${menuHeight}px)` }">
         <CustomTab />
         <view class="user_option">
-            <image src="../../../static/image/default_img.jpg" class="avatar" />
+            <image src="/static/image/default_img.jpg" class="avatar" />
             <view class="info">
                 <view class="username">
                     <text>呀拉索</text>
@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import CustomTab from "../../components/CustomTab/index.vue"
+import CustomTab from "/components/CustomTab/index.vue"
 import TreeSelect from './components/TreeSelect.vue'
 const { menuHeight, menuTop } = uni.getStorageSync('menuInfo')
 
@@ -36,7 +36,7 @@ const editHandler = () => {
 
 const addHandler = () => {
     uni.navigateTo({
-        url: '../productionManagement/index'
+        url: '/pages/productionManagement/index'
     });
 }
 

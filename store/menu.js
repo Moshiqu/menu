@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { getMenu } from '@/src/api/menu'
+import { getMenu } from '/api/menu'
 import { cloneDeep } from 'lodash'
 
 export const useMenuStore = defineStore("menu", {

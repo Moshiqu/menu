@@ -59,11 +59,11 @@
 <script setup>
 import { onLoad } from "@dcloudio/uni-app"
 import { ref } from "vue"
-import MkTextarea from '@/src/components/MkTextarea'
-import { addProductionDetail, updateProductionDetail } from '@/src/api/menu'
+import MkTextarea from '/components/MkTextarea'
+import { addProductionDetail, updateProductionDetail } from '/api/menu'
 
 // 从pinia中获取菜单列表
-import { useMenuStore } from "@/src/store/menu";
+import { useMenuStore } from "/store/menu";
 const menuStore = useMenuStore()
 
 const cateList = ref([])
@@ -135,7 +135,7 @@ const saveHandler = () => {
             menuStore.getMenuListByApi()
             setTimeout(() => {
                 uni.switchTab({
-                    url: `../menu/index`
+                    url: `/pages/menu/index`
                 });
             }, 2000);
         }).catch(err => {
@@ -150,7 +150,7 @@ const saveHandler = () => {
             menuStore.getMenuListByApi()
             setTimeout(() => {
                 uni.switchTab({
-                    url: `../menu/index`
+                    url: `/pages/menu/index`
                 });
             }, 2000);
         }).catch(err => {
@@ -179,7 +179,7 @@ const saveAndNext = () => {
             uni.showToast({ title: '修改商品成功', icon: 'success', mask: true })
             setTimeout(() => {
                 uni.reLaunch({
-                    url: `../productionStep/index?productionId=${res.data.id}&productionName=${productName.value}`
+                    url: `/pages/productionStep/index?productionId=${res.data.id}&productionName=${productName.value}`
                 });
             }, 1500);
         }).catch(err => {
@@ -194,7 +194,7 @@ const saveAndNext = () => {
             uni.showToast({ title: '添加商品成功', icon: 'success', mask: true })
             setTimeout(() => {
                 uni.reLaunch({
-                    url: `../productionStep/index?productionId=${res.data.id}&productionName=${productName.value}`
+                    url: `/pages/productionStep/index?productionId=${res.data.id}&productionName=${productName.value}`
                 });
             }, 1500);
         }).catch(err => {
@@ -237,7 +237,7 @@ const saveAndNext = () => {
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                background-image: url(../../../static/image/menu/icon_camera.png);
+                background-image: url(/static/image/menu/icon_camera.png);
                 background-size: 100% 100%;
 
             }

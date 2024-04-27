@@ -22,18 +22,18 @@
                 <view class="cate" v-for="item in menuStore.menuList" :key="item.id" :id="'parent_' + item.id">
                     <view class="cate_title">{{ item.category_name }}</view>
                     <view class="product_card" v-for="(product, productIndex) in item.children" :key="product.id" v-if="item.children.length">
-                        <image src="../../../../static/image/default_img.jpg" class="product_img"></image>
+                        <image src="/static/image/default_img.jpg" class="product_img"></image>
                         <view class="product_info">
                             <view class="product_title">{{ product.product_name }}</view>
                             <view class="product_desc">{{ product.product_description }}</view>
                             <view class="product_sale" v-if="!isEdit">销量:{{ product.sold_num || 0 }}</view>
                             <view class="product_operation" v-if="!isEdit">
                                 <template v-if="calSelectNum(item.id, product.id)">
-                                    <image src="../../../../static/image/menu/icon_minus.png" class="btn"
+                                    <image src="/static/image/menu/icon_minus.png" class="btn"
                                         @click="plusMinusHandler(item.id, product, 'minus')" />
                                     <text class="select_text">{{ calSelectNum(item.id, product.id) }}</text>
                                 </template>
-                                <image src="../../../../static/image/menu/icon_plus.png" class="btn plus"
+                                <image src="/static/image/menu/icon_plus.png" class="btn plus"
                                     @click="plusMinusHandler(item.id, product, 'plus')" :id="`startBtn_${product.id}`" />
                                 <view class="fly_item" :id="`flyItem_${product.id}`"
                                     :style="product.id == animationProductId ? flyItemStyle : {}">
@@ -51,14 +51,14 @@
                         </view>
                     </view>
                     <view class="no_product" v-else>
-                        <image src="../../../../static/image/no_data_img.jpg" class="no_data_img"></image>
+                        <image src="/static/image/no_data_img.jpg" class="no_data_img"></image>
                     </view>
                 </view>
             </scroll-view>
         </view>
         <view class="cart" @click="showCart" id="cart">
             <view>{{ menuStore.allCartNum }}</view>
-            <image src="../../../../static/image/menu/bowl.png" class="bowl" />
+            <image src="/static/image/menu/bowl.png" class="bowl" />
         </view>
         <MkDialog v-model:showDialog="showDialog" @confirm="deleteProductHandler" :title="'提示'"
             :description="`是否确认删除该商品!`" />
@@ -67,19 +67,19 @@
 </template>
 
 <script setup>
-import MkDialog from '@/src/components/MkDialog'
-import MkLoading from '@/src/components/MkLoading'
+import MkDialog from '/components/MkDialog'
+import MkLoading from '/components/MkLoading'
 import { ref, nextTick, getCurrentInstance, computed, watch, defineProps, onMounted } from 'vue'
 import { throttle } from 'lodash'
-import { getMenu } from '@/src/api/menu'
-import { deleteProduct } from '@/src/api/menu';
-import { updateSort } from '@/src/api/menu'
+import { getMenu } from '/api/menu'
+import { deleteProduct } from '/api/menu';
+import { updateSort } from '/api/menu'
 
 
 // 当前组件实例
 const currentInstance = getCurrentInstance()
 
-import { useMenuStore } from "@/src/store/menu"
+import { useMenuStore } from "/store/menu"
 const menuStore = useMenuStore()
 
 // 获取数据
@@ -126,7 +126,7 @@ const parentClickHandler = (id) => {
 
     if (id == -1) {
         uni.navigateTo({
-            url: '../cateManagement/index'
+            url: '/pages/cateManagement/index'
         });
     }
 }
@@ -245,7 +245,7 @@ const productMove = (up, cate, product, productIndex) => {
 
 const editProduction = (production) => {
     uni.navigateTo({
-        url: `../productionManagement/index?production=${JSON.stringify(production)}`
+        url: `/pages/productionManagement/index?production=${JSON.stringify(production)}`
     });
 }
 
@@ -326,7 +326,7 @@ const deleteProductHandler = () => {
                 width: 32rpx;
                 height: 32rpx;
                 // background-image无法引用本地资源，故需要用网络地址
-                background-image: url('../../../../static/image/menu/icon_setting.png');
+                background-image: url('/static/image/menu/icon_setting.png');
                 background-size: 100% 100%;
             }
         }
