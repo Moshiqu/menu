@@ -28,7 +28,16 @@
                         <view class="product_info">
                             <view class="product_title">{{ product.product_name }}</view>
                             <view class="product_desc">{{ product.product_description }}</view>
-                            <view class="product_sale" v-if="!isEdit">销量:{{ product.sold_num || 0 }}</view>
+                            <view class="product_sale" v-if="!isEdit">
+                                <view class="price">￥{{ product.product_price || 0 }}</view>
+                                <view>销量:{{ product.sold_num || 0 }}</view>
+                            </view>
+                            <view class="product_like" v-if="!isEdit && product.like_num">
+                                <view>
+                                    <image src="/static/image/menu/icon_like.png" mode="widthFix" />
+                                    <view class="num">123</view>
+                                </view>
+                            </view>
                             <view class="product_operation" v-if="!isEdit">
                                 <template v-if="calSelectNum(item.id, product.id)">
                                     <image src="/static/image/menu/icon_minus.png" class="btn"
@@ -161,6 +170,7 @@ const calSelectNum = (cateId, productId) => {
 
 // 购物车
 const showCart = () => {
+    // TODO 购物车弹框
     console.log(cartList);
 }
 
@@ -274,7 +284,7 @@ const deleteProductHandler = () => {
 }
 
 // 去商品详情页
-const toDetail = (productionId)=>{
+const toDetail = (productionId) => {
     uni.navigateTo({
         url: `/pages/productionDetail/index?productionId=${productionId}`
     });
@@ -424,6 +434,38 @@ const toDetail = (productionId)=>{
                     .product_sale {
                         font-size: 24rpx;
                         color: #999;
+                        display: flex;
+                        align-items: center;
+
+                        &>view {
+                            width: 50%;
+                        }
+
+                        .price {
+                            color: #e94f30;
+                        }
+                    }
+
+                    .product_like {
+                        display: flex;
+                        align-items: center;
+                        position: absolute;
+                        bottom: 0;
+
+                        &>view {
+                            display: flex;
+                            align-items: flex-end;
+
+                            image {
+                                width: 40rpx;
+                            }
+
+                            .num {
+                                font-size: 28rpx;
+                                color: #d81e06;
+                                line-height: 14px;
+                            }
+                        }
                     }
 
                     .product_operation {
@@ -433,6 +475,7 @@ const toDetail = (productionId)=>{
                         height: calc(40rpx * 1.2);
                         display: flex;
                         justify-content: space-between;
+                        align-items: flex-end;
 
                         .select_text {
                             width: 60rpx;
