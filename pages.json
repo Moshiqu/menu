@@ -36,6 +36,12 @@
             "style": {
                 "navigationBarTitleText": "商品步骤"
             }
+        },
+        {
+            "path": "pages/productionDetail/index",
+            "style": {
+                "navigationBarTitleText": "商品详情"
+            }
         }
     ],
     "globalStyle": {

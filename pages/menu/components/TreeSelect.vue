@@ -21,12 +21,23 @@
                 class="scroll-view">
                 <view class="cate" v-for="item in menuStore.menuList" :key="item.id" :id="'parent_' + item.id">
                     <view class="cate_title">{{ item.category_name }}</view>
-                    <view class="product_card" v-for="(product, productIndex) in item.children" :key="product.id" v-if="item.children.length">
-                        <image src="/static/image/default_img.jpg" class="product_img"></image>
+                    <view class="product_card" v-for="(product, productIndex) in item.children" :key="product.id"
+                        v-if="item.children.length">
+                        <image src="/static/image/default_img.jpg" class="product_img" @click="toDetail(product.id)">
+                        </image>
                         <view class="product_info">
                             <view class="product_title">{{ product.product_name }}</view>
                             <view class="product_desc">{{ product.product_description }}</view>
-                            <view class="product_sale" v-if="!isEdit">销量:{{ product.sold_num || 0 }}</view>
+                            <view class="product_sale" v-if="!isEdit">
+                                <view class="price">￥{{ product.product_price || 0 }}</view>
+                                <view>销量:{{ product.sold_num || 0 }}</view>
+                            </view>
+                            <view class="product_like" v-if="!isEdit && product.like_num">
+                                <view>
+                                    <image src="/static/image/menu/icon_like.png" mode="widthFix" />
+                                    <view class="num">123</view>
+                                </view>
+                            </view>
                             <view class="product_operation" v-if="!isEdit">
                                 <template v-if="calSelectNum(item.id, product.id)">
                                     <image src="/static/image/menu/icon_minus.png" class="btn"
@@ -159,6 +170,7 @@ const calSelectNum = (cateId, productId) => {
 
 // 购物车
 const showCart = () => {
+    // TODO 购物车弹框
     console.log(cartList);
 }
 
@@ -268,6 +280,13 @@ const deleteProductHandler = () => {
         uni.showToast({ title: "删除失败", icon: 'error' })
     }).finally(() => {
         isLoading.value = false
+    });
+}
+
+// 去商品详情页
+const toDetail = (productionId) => {
+    uni.navigateTo({
+        url: `/pages/productionDetail/index?productionId=${productionId}`
     });
 }
 
@@ -415,6 +434,38 @@ const deleteProductHandler = () => {
                     .product_sale {
                         font-size: 24rpx;
                         color: #999;
+                        display: flex;
+                        align-items: center;
+
+                        &>view {
+                            width: 50%;
+                        }
+
+                        .price {
+                            color: #e94f30;
+                        }
+                    }
+
+                    .product_like {
+                        display: flex;
+                        align-items: center;
+                        position: absolute;
+                        bottom: 0;
+
+                        &>view {
+                            display: flex;
+                            align-items: flex-end;
+
+                            image {
+                                width: 40rpx;
+                            }
+
+                            .num {
+                                font-size: 28rpx;
+                                color: #d81e06;
+                                line-height: 14px;
+                            }
+                        }
                     }
 
                     .product_operation {
@@ -424,6 +475,7 @@ const deleteProductHandler = () => {
                         height: calc(40rpx * 1.2);
                         display: flex;
                         justify-content: space-between;
+                        align-items: flex-end;
 
                         .select_text {
                             width: 60rpx;
@@ -489,8 +541,8 @@ const deleteProductHandler = () => {
                 }
             }
 
-            .no_product{
-                .no_data_img{
+            .no_product {
+                .no_data_img {
                     width: 400rpx;
                     height: 200rpx;
                     margin: 20rpx 0;
