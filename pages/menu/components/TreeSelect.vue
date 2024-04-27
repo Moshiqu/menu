@@ -21,8 +21,10 @@
                 class="scroll-view">
                 <view class="cate" v-for="item in menuStore.menuList" :key="item.id" :id="'parent_' + item.id">
                     <view class="cate_title">{{ item.category_name }}</view>
-                    <view class="product_card" v-for="(product, productIndex) in item.children" :key="product.id" v-if="item.children.length">
-                        <image src="/static/image/default_img.jpg" class="product_img"></image>
+                    <view class="product_card" v-for="(product, productIndex) in item.children" :key="product.id"
+                        v-if="item.children.length">
+                        <image src="/static/image/default_img.jpg" class="product_img" @click="toDetail(product.id)">
+                        </image>
                         <view class="product_info">
                             <view class="product_title">{{ product.product_name }}</view>
                             <view class="product_desc">{{ product.product_description }}</view>
@@ -271,6 +273,13 @@ const deleteProductHandler = () => {
     });
 }
 
+// 去商品详情页
+const toDetail = (productionId)=>{
+    uni.navigateTo({
+        url: `/pages/productionDetail/index?productionId=${productionId}`
+    });
+}
+
 </script>
 
 <style lang="less" scoped>
@@ -489,8 +498,8 @@ const deleteProductHandler = () => {
                 }
             }
 
-            .no_product{
-                .no_data_img{
+            .no_product {
+                .no_data_img {
                     width: 400rpx;
                     height: 200rpx;
                     margin: 20rpx 0;

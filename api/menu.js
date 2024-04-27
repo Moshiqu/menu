@@ -35,3 +35,6 @@ export const updateCategorySort = options => request({ url: "/api/menu/updateCat
 
 // 删除分类
 export const deleteCategory = options => request({ url: "/api/menu/deleteCategory", method: "DELETE", data: options })
+
+// 获取商品详情
+export const getProductionDetail = options => request({ url: "/api/menu/getProduct", method: "GET", data: options })
