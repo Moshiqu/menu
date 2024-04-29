@@ -29,6 +29,14 @@ export const useMenuStore = defineStore("menu", {
             })
 
             return num
+        },
+        cartProductsList() {
+            return this.cartList.reduce((accumulator, currentValue) => {
+                if (currentValue.children && currentValue.children.length) {
+                    accumulator.push(...currentValue.children)
+                }
+                return accumulator
+            }, [])
         }
     },
     actions: {
@@ -72,11 +80,11 @@ export const useMenuStore = defineStore("menu", {
                 if (res.code == 200) {
                     this.setMenuList(res.data)
                 } else {
-                    uni.showToast({ title: "获取菜单失败" })
+                    uni.showToast({ title: "获取菜单失败", icon: "none" })
                 }
             }).catch(err => {
                 // uni.hideLoading()
-                uni.showToast({ title: "获取菜单失败" })
+                uni.showToast({ title: "获取菜单失败", icon: "none" })
             })
         },
         // 购物车

@@ -67,19 +67,21 @@
                 </view>
             </scroll-view>
         </view>
-        <view class="cart" @click="showCart" id="cart">
+        <view class="cart" @click="isShowCart = true" id="cart">
             <view>{{ menuStore.allCartNum }}</view>
             <image src="/static/image/menu/bowl.png" class="bowl" />
         </view>
         <MkDialog v-model:showDialog="showDialog" @confirm="deleteProductHandler" :title="'提示'"
             :description="`是否确认删除该商品!`" />
         <MkLoading :loading="isLoading" showText text="正在删除" />
+        <CartPop @hideCart="hideCart" v-model:isShowCart="isShowCart"/>
     </view>
 </template>
 
 <script setup>
 import MkDialog from '/components/MkDialog'
 import MkLoading from '/components/MkLoading'
+import CartPop from './CartPop.vue'
 import { ref, nextTick, getCurrentInstance, computed, watch, defineProps, onMounted } from 'vue'
 import { throttle } from 'lodash'
 import { getMenu } from '/api/menu'
@@ -111,7 +113,6 @@ watch(() => menuStore.menuList, (nv, ov) => {
     if (nv.length) {
         parentActiveId.value = menuStore.menuList[0].id
         intoParentId.value = `parent_${menuStore.menuList[0].id}`
-        console.log(parentActiveId.value, intoParentId.value);
 
         // 右侧产品栏最顶部的分类id
         nextTick(() => {
@@ -169,9 +170,10 @@ const calSelectNum = (cateId, productId) => {
 }
 
 // 购物车
-const showCart = () => {
-    // TODO 购物车弹框
-    console.log(cartList);
+const isShowCart = ref(true)
+
+const hideCart = () => {
+    isShowCart.value = false
 }
 
 // 添加 动画
