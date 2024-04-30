@@ -3,136 +3,40 @@
         <view :class="['mask', $props.isShowCart ? 'is_visible' : 'is_hide']">
             <view :class="['cart', $props.isShowCart ? 'is_visible' : 'is_hide']" @click.stop>
                 <view class="cart_title">
-                    <view>已选商品({{ cartList.length }})</view>
+                    <view>已选商品({{ menuStore.cartProductsList.length || 0 }})</view>
                     <image src="/static/image/common/icon_delete.png" @click="$emits('update:isShowCart')"
                         mode="scaleToFill" />
                 </view>
                 <scroll-view scroll-y="true"
-                    style="max-width: 800rpx;max-width: 416px;min-height: 470rpx;max-height: 800rpx;">
-                    <!-- <view v-for="product in cartList" :key="product.id" class="product_item">
-                        <image src="/static/image/default_img.jpg" />
-                    </view> -->
-                    <view class="product_item">
+                    style="max-width: 800rpx;max-width: 416px;min-height: 470rpx;max-height: 800rpx;"
+                    v-if="menuStore.cartProductsList.length">
+                    <view class="product_item" v-for="product in menuStore.cartProductsList" :key="product.id">
                         <image src="/static/image/default_img.jpg" mode="scaleToFill" />
                         <view class="product_content">
-                            <view class="product_title">这个是title啊</view>
-                            <view class="product_price">￥999.00</view>
+                            <view class="product_title">{{ product.product_name }}</view>
+                            <view class="product_price">￥{{ product.product_price || 0 }}</view>
                             <view class="product_like_num">
-                                <view class="product_like">
+                                <view class="product_like" :style="{ visibility: product.like_num ? 'visible' : 'hidden' }">
                                     <view>
                                         <image src="/static/image/menu/icon_like.png" mode="widthFix" />
-                                        <view class="num">123</view>
+                                        <view class="num">{{ product.like_num }}</view>
                                     </view>
                                 </view>
                                 <view class="product_num">
-                                    <image src="/static/image/menu/icon_minus.png" class="btn" />
-                                    <text class="select_text">99</text>
-                                    <image src="/static/image/menu/icon_plus.png" class="btn plus" />
-                                </view>
-                            </view>
-                        </view>
-                    </view>
-                    <view class="product_item">
-                        <image src="/static/image/default_img.jpg" mode="scaleToFill" />
-                        <view class="product_content">
-                            <view class="product_title">这个是title啊</view>
-                            <view class="product_price">￥999.00</view>
-                            <view class="product_like_num">
-                                <view class="product_like">
-                                    <view>
-                                        <image src="/static/image/menu/icon_like.png" mode="widthFix" />
-                                        <view class="num">123</view>
-                                    </view>
-                                </view>
-                                <view class="product_num">
-                                    <image src="/static/image/menu/icon_minus.png" class="btn" />
-                                    <text class="select_text">99</text>
-                                    <image src="/static/image/menu/icon_plus.png" class="btn plus" />
-                                </view>
-                            </view>
-                        </view>
-                    </view>
-                    <view class="product_item">
-                        <image src="/static/image/default_img.jpg" mode="scaleToFill" />
-                        <view class="product_content">
-                            <view class="product_title">这个是title啊</view>
-                            <view class="product_price">￥999.00</view>
-                            <view class="product_like_num">
-                                <view class="product_like">
-                                    <view>
-                                        <image src="/static/image/menu/icon_like.png" mode="widthFix" />
-                                        <view class="num">123</view>
-                                    </view>
-                                </view>
-                                <view class="product_num">
-                                    <image src="/static/image/menu/icon_minus.png" class="btn" />
-                                    <text class="select_text">99</text>
-                                    <image src="/static/image/menu/icon_plus.png" class="btn plus" />
-                                </view>
-                            </view>
-                        </view>
-                    </view>
-                    <view class="product_item">
-                        <image src="/static/image/default_img.jpg" mode="scaleToFill" />
-                        <view class="product_content">
-                            <view class="product_title">这个是title啊</view>
-                            <view class="product_price">￥999.00</view>
-                            <view class="product_like_num">
-                                <view class="product_like">
-                                    <view>
-                                        <image src="/static/image/menu/icon_like.png" mode="widthFix" />
-                                        <view class="num">123</view>
-                                    </view>
-                                </view>
-                                <view class="product_num">
-                                    <image src="/static/image/menu/icon_minus.png" class="btn" />
-                                    <text class="select_text">99</text>
-                                    <image src="/static/image/menu/icon_plus.png" class="btn plus" />
-                                </view>
-                            </view>
-                        </view>
-                    </view>
-                    <view class="product_item">
-                        <image src="/static/image/default_img.jpg" mode="scaleToFill" />
-                        <view class="product_content">
-                            <view class="product_title">这个是title啊</view>
-                            <view class="product_price">￥999.00</view>
-                            <view class="product_like_num">
-                                <view class="product_like">
-                                    <view>
-                                        <image src="/static/image/menu/icon_like.png" mode="widthFix" />
-                                        <view class="num">123</view>
-                                    </view>
-                                </view>
-                                <view class="product_num">
-                                    <image src="/static/image/menu/icon_minus.png" class="btn" />
-                                    <text class="select_text">99</text>
-                                    <image src="/static/image/menu/icon_plus.png" class="btn plus" />
-                                </view>
-                            </view>
-                        </view>
-                    </view>
-                    <view class="product_item">
-                        <image src="/static/image/default_img.jpg" mode="scaleToFill" />
-                        <view class="product_content">
-                            <view class="product_title">这个是title啊</view>
-                            <view class="product_price">￥999.00</view>
-                            <view class="product_like_num">
-                                <view class="product_like">
-                                    <view>
-                                        <image src="/static/image/menu/icon_like.png" mode="widthFix" />
-                                        <view class="num">123</view>
-                                    </view>
-                                </view>
-                                <view class="product_num">
-                                    <image src="/static/image/menu/icon_minus.png" class="btn" />
-                                    <text class="select_text">99</text>
-                                    <image src="/static/image/menu/icon_plus.png" class="btn plus" />
+                                    <image src="/static/image/menu/icon_minus.png" class="btn"
+                                        @click="plusMinusProductHandler(product, 'minus')" />
+                                    <text class="select_text">{{ product.selectNum }}</text>
+                                    <image src="/static/image/menu/icon_plus.png" class="btn plus"
+                                        @click="plusMinusProductHandler(product, 'plus')" />
                                 </view>
                             </view>
                         </view>
                     </view>
                 </scroll-view>
+                <view class="empty-cart" v-else>
+                    <image src="/static/image/menu/empty_cart.png" mode="scaleToFill" />
+                    <text>购物车是空的，去添加一些吧~</text>
+                </view>
             </view>
         </view>
     </view>
@@ -145,12 +49,25 @@ const menuStore = useMenuStore()
 
 const $props = defineProps()
 
-const $emits = defineEmits(['update:isShowCart'])
+const $emits = defineEmits(['update:isShowCart', 'plusMinusHandler'])
 
-const cartList = ref(menuStore.cartProductsList)
+console.log(menuStore.cartProductsList);
+const plusMinusProductHandler = (product, type) => {
+    if (type === 'minus' && product.selectNum === 1) {
+        return uni.showModal({
+            title: '提示',
+            content: '确定要移除该商品吗?',
+            success: (res) => {
+                if (res.confirm) {
+                    $emits('plusMinusHandler', product.category_id, product, type)
+                }
+            }
+        });
+    }
+    $emits('plusMinusHandler', product.category_id, product, type)
+}
 
-console.log(cartList);
-// TODO 购物车模块
+// TODO 去下单和计算购物车内总金额
 </script>
 
 <style scoped lang="less">
@@ -261,14 +178,28 @@ console.log(cartList);
                 }
             }
 
+            .empty-cart {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding-bottom: 40rpx;
+
+                image {
+                    width: calc(320rpx * 1.52);
+                    height: 320rpx;
+                    margin-bottom: 40rpx;
+                }
+            }
+
             .product_item {
                 height: 140rpx;
                 box-sizing: border-box;
                 display: flex;
                 margin-bottom: 30rpx;
 
-                &:last-child{
-                    margin-bottom: 200rpx;
+                &:last-child {
+                    margin-bottom: 160rpx;
                 }
 
                 &>image {
