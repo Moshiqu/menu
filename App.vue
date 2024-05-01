@@ -1,11 +1,52 @@
 <script>
-import { useMenuStore } from "./store/menu"
+import { getOpenID, check } from "@/api/user";
+import { useMenuStore } from "/store/menu"
 
 export default {
-    onLaunch: function () {
+    onLaunch: function async() {
         console.log('App Launch')
-        const menuStore = useMenuStore()
-        menuStore.getMenuListByApi()
+        uni.showLoading({
+            title: '加载中',
+            mask: true
+        })
+        uni.login({
+            provider: 'weixin',
+            success: res => {
+                const { code, errMsg } = res
+
+                getOpenID({ code }).then(res => {
+                    if (res.code === 200) {
+                        uni.setStorage({
+                            key: 'openid',
+                            data: res.data.openid
+                        })
+
+                        check({ openid: res.data.openid }).then(res => {
+                            uni.setStorageSync('token', res.data.token)
+                            const menuStore = useMenuStore()
+                            menuStore.getMenuListByApi()
+                            uni.hideLoading()
+
+                        }).catch(err => {
+                            uni.showToast({
+                                title: err.Msg || err.message || '检查用户失败',
+                                icon: 'none',
+                                mask: true
+                            })
+                            uni.hideLoading()
+                        })
+                    }
+                }).catch(err => {
+                    uni.hideLoading()
+                    uni.showToast({
+                        title: err.Msg || err.message || '获取openid失败',
+                        icon: 'none',
+                        mask: true
+                    })
+                })
+            }
+        });
+
     },
     onShow: function () {
         uni.getSystemInfo({
@@ -33,7 +74,7 @@ export default {
 
                 let menuInfo = {
                     statusBarHeight: statusBarHeight,//状态栏高度----用来给自定义导航条页面的顶部导航条设计padding-top使用：目的留出系统的状态栏区域
-                    menuWidth: menuWidth,//右侧的胶囊宽度--用来给自定义导航条页面的左侧胶囊设置使用
+                    menuWidth: menuWidth,//右侧的胶囊宽度--用来给自定义导航条页面的左侧胶囊设置使用./utils/check
                     menuHeight: menuHeight,//右侧的胶囊高度--用来给自定义导航条页面的左侧胶囊设置使用
                     menuBorderRadius: menuBorderRadius,//一半的圆角--用来给自定义导航条页面的左侧胶囊设置使用
                     menuRight: menuRight,//右侧的胶囊距离右侧屏幕距离--用来给自定义导航条页面的左侧胶囊设置使用

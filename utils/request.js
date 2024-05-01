@@ -12,6 +12,9 @@ function handleRequest(options, resolve, reject) {
         url: BASEURL + options.url,
         method: options.method,
         data: options.data,
+        header: {
+            Authorization: `Bearer ${uni.getStorageSync('token')}`
+        },
         success: (response) => {
             if (response.data.code != 200) return reject(response.data)
             return resolve(response.data)
