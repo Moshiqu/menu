@@ -7,32 +7,38 @@
                     <image src="/static/image/common/icon_delete.png" @click="$emits('update:isShowCart')"
                         mode="scaleToFill" />
                 </view>
-                <scroll-view scroll-y="true"
-                    style="max-width: 800rpx;max-width: 416px;min-height: 470rpx;max-height: 800rpx;"
-                    v-if="menuStore.cartProductsList.length">
-                    <view class="product_item" v-for="product in menuStore.cartProductsList" :key="product.id">
-                        <image src="/static/image/default_img.jpg" mode="scaleToFill" />
-                        <view class="product_content">
-                            <view class="product_title">{{ product.product_name }}</view>
-                            <view class="product_price">￥{{ product.product_price || 0 }}</view>
-                            <view class="product_like_num">
-                                <view class="product_like" :style="{ visibility: product.like_num ? 'visible' : 'hidden' }">
-                                    <view>
-                                        <image src="/static/image/menu/icon_like.png" mode="widthFix" />
-                                        <view class="num">{{ product.like_num }}</view>
+                <template v-if="menuStore.cartProductsList.length">
+                    <scroll-view scroll-y="true"
+                        style="max-width: 800rpx;max-width: 416px;min-height: 470rpx;max-height: 800rpx;">
+                        <view class="product_item" v-for="product in menuStore.cartProductsList" :key="product.id">
+                            <image src="/static/image/default_img.jpg" mode="scaleToFill" />
+                            <view class="product_content">
+                                <view class="product_title">{{ product.product_name }}</view>
+                                <view class="product_price">￥{{ product.product_price || 0 }}</view>
+                                <view class="product_like_num">
+                                    <view class="product_like"
+                                        :style="{ visibility: product.like_num ? 'visible' : 'hidden' }">
+                                        <view>
+                                            <image src="/static/image/menu/icon_like.png" mode="widthFix" />
+                                            <view class="num">{{ product.like_num }}</view>
+                                        </view>
                                     </view>
-                                </view>
-                                <view class="product_num">
-                                    <image src="/static/image/menu/icon_minus.png" class="btn"
-                                        @click="plusMinusProductHandler(product, 'minus')" />
-                                    <text class="select_text">{{ product.selectNum }}</text>
-                                    <image src="/static/image/menu/icon_plus.png" class="btn plus"
-                                        @click="plusMinusProductHandler(product, 'plus')" />
+                                    <view class="product_num">
+                                        <image src="/static/image/menu/icon_minus.png" class="btn"
+                                            @click="plusMinusProductHandler(product, 'minus')" />
+                                        <text class="select_text">{{ product.selectNum }}</text>
+                                        <image src="/static/image/menu/icon_plus.png" class="btn plus"
+                                            @click="plusMinusProductHandler(product, 'plus')" />
+                                    </view>
                                 </view>
                             </view>
                         </view>
-                    </view>
-                </scroll-view>
+                    </scroll-view>
+                    <button class="confirm_btn">
+                        <text class="money">￥{{ totalPrice }}</text>
+                        <text class="">选好了，提交订单</text>
+                    </button>
+                </template>
                 <view class="empty-cart" v-else>
                     <image src="/static/image/menu/empty_cart.png" mode="scaleToFill" />
                     <text>购物车是空的，去添加一些吧~</text>
@@ -44,7 +50,7 @@
 
 <script setup>
 import { useMenuStore } from "/store/menu"
-import { ref } from "vue";
+import { ref, computed } from "vue";
 const menuStore = useMenuStore()
 
 const $props = defineProps()
@@ -67,7 +73,15 @@ const plusMinusProductHandler = (product, type) => {
     $emits('plusMinusHandler', product.category_id, product, type)
 }
 
-// TODO 去下单和计算购物车内总金额
+// 购物车总金额
+const totalPrice = computed(() => {
+    console.log(menuStore.cartProductsList);
+    return menuStore.cartProductsList.reduce((acc, cur) => {
+        return acc + cur.selectNum * cur.product_price
+    }, 0).toFixed(2)
+})
+
+
 </script>
 
 <style scoped lang="less">
@@ -175,6 +189,25 @@ const plusMinusProductHandler = (product, type) => {
                 image {
                     height: 28rpx;
                     width: 28rpx;
+                }
+            }
+
+            .confirm_btn {
+                position: fixed;
+                bottom: 40rpx;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80%;
+                height: 80rpx;
+                background-color: #f6c33d;
+                border-radius: 40rpx;
+                font-size: 32rpx;
+
+                .money {
+                    color: #e94f30;
+                    font-size: 28rpx;
+                    margin-right: 20rpx;
+                    font-weight: 700;
                 }
             }
 
