@@ -62,24 +62,27 @@
                         </view>
                     </view>
                     <view class="no_product" v-else>
-                        <image src="/static/image/no_data_img.jpg" class="no_data_img"></image>
+                        <image src="/static/image/no_data_img.png" class="no_data_img"></image>
                     </view>
                 </view>
             </scroll-view>
         </view>
-        <view class="cart" @click="showCart" id="cart">
+        <view class="cart" @click="isShowCart = true, isFirstShowCart = true" id="cart">
             <view>{{ menuStore.allCartNum }}</view>
             <image src="/static/image/menu/bowl.png" class="bowl" />
         </view>
         <MkDialog v-model:showDialog="showDialog" @confirm="deleteProductHandler" :title="'提示'"
             :description="`是否确认删除该商品!`" />
         <MkLoading :loading="isLoading" showText text="正在删除" />
+        <CartPop @hideCart="hideCart" v-model:isShowCart="isShowCart" @plusMinusHandler="plusMinusHandler"
+            v-if="isFirstShowCart" />
     </view>
 </template>
 
 <script setup>
 import MkDialog from '/components/MkDialog'
 import MkLoading from '/components/MkLoading'
+import CartPop from './CartPop.vue'
 import { ref, nextTick, getCurrentInstance, computed, watch, defineProps, onMounted } from 'vue'
 import { throttle } from 'lodash'
 import { getMenu } from '/api/menu'
@@ -105,21 +108,22 @@ const getMenuHandler = () => {
 }
 
 // 激活的分类id
-const parentActiveId = ref(-0)
+const parentActiveId = ref(-1)
 
 watch(() => menuStore.menuList, (nv, ov) => {
     if (nv.length) {
         parentActiveId.value = menuStore.menuList[0].id
         intoParentId.value = `parent_${menuStore.menuList[0].id}`
-        console.log(parentActiveId.value, intoParentId.value);
 
         // 右侧产品栏最顶部的分类id
         nextTick(() => {
             menuStore.menuList.forEach(item => {
                 if (item.children.length) {
                     uni.createIntersectionObserver(currentInstance).relativeTo('.unvisited_box').observe(`#parent_${item.id}`, (res) => {
-                        const { id } = res
-                        parentActiveId.value = id.replace(/[^\d]/g, "")
+                        setTimeout(() => {
+                            const { id } = res
+                            parentActiveId.value = id.replace(/[^\d]/g, "")
+                        }, 500);
                     })
                 }
             })
@@ -148,6 +152,13 @@ const parentClickHandler = (id) => {
 const plusMinusHandler = throttle((categoryId, product, type = 'plus') => {
     switch (type) {
         case 'plus':
+            if (product.selectNum == 99) {
+                return uni.showToast({
+                    title: '数量已达上限',
+                    icon: 'none',
+                    mask: true
+                })
+            }
             plusAnimationHandler(product.id)
             menuStore.addToCart(categoryId, product)
             break;
@@ -169,9 +180,11 @@ const calSelectNum = (cateId, productId) => {
 }
 
 // 购物车
-const showCart = () => {
-    // TODO 购物车弹框
-    console.log(cartList);
+const isShowCart = ref(false)
+const isFirstShowCart = ref(false)
+
+const hideCart = () => {
+    isShowCart.value = false
 }
 
 // 添加 动画

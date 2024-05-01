@@ -139,6 +139,9 @@ const backMenu = () => {
 }
 
 // 保存
+import { useMenuStore } from "@/store/menu";
+const menuStore = useMenuStore()
+
 const save = () => {
     if (!stepData.value.length || !stepData.value[0].step_description) return uni.showToast({ title: '请至少设置一个步骤', icon: "none", duration: 2000 })
     // 步骤说明不能为空
@@ -165,6 +168,8 @@ const save = () => {
         addMaterialStep(params).then(res => {
             uni.hideLoading()
             uni.showToast({ title: "保存成功", icon: "success" })
+            menuStore.getMenuListByApi()
+
             setTimeout(() => {
                 uni.switchTab({
                     url: `/pages/menu/index`
@@ -178,6 +183,8 @@ const save = () => {
         updateMaterialStep(params).then(res => {
             uni.hideLoading()
             uni.showToast({ title: "保存成功", icon: "success" })
+            menuStore.getMenuListByApi()
+
             setTimeout(() => {
                 uni.switchTab({
                     url: `/pages/menu/index`,

@@ -131,7 +131,7 @@ const saveHandler = () => {
         updateProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value, id: productId.value }).then(res => {
             uni.hideLoading()
             uni.showToast({ title: '修改商品成功', icon: 'success', mask: true, duration: 2000 })
-        
+
             menuStore.getMenuListByApi()
             setTimeout(() => {
                 uni.switchTab({
@@ -146,7 +146,7 @@ const saveHandler = () => {
         addProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value }).then(res => {
             uni.hideLoading()
             uni.showToast({ title: '添加商品成功', icon: 'success', mask: true, duration: 2000 })
-            
+
             menuStore.getMenuListByApi()
             setTimeout(() => {
                 uni.switchTab({
@@ -177,6 +177,8 @@ const saveAndNext = () => {
         updateProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value, id: productId.value }).then(res => {
             uni.hideLoading()
             uni.showToast({ title: '修改商品成功', icon: 'success', mask: true })
+            menuStore.getMenuListByApi()
+
             setTimeout(() => {
                 uni.reLaunch({
                     url: `/pages/productionStep/index?productionId=${res.data.id}&productionName=${productName.value}`
@@ -192,6 +194,8 @@ const saveAndNext = () => {
         addProductionDetail({ productName: productName.value, productDescription: productDescription.value, cateId, productPrice: productPrice.value }).then(res => {
             uni.hideLoading()
             uni.showToast({ title: '添加商品成功', icon: 'success', mask: true })
+            menuStore.getMenuListByApi()
+
             setTimeout(() => {
                 uni.reLaunch({
                     url: `/pages/productionStep/index?productionId=${res.data.id}&productionName=${productName.value}`
