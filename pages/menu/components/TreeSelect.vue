@@ -88,12 +88,11 @@ import { throttle } from 'lodash'
 import { getMenu } from '/api/menu'
 import { deleteProduct } from '/api/menu';
 import { updateSort } from '/api/menu'
-// TODO 切换店面
+import { useMenuStore } from "/store/menu"
 
 // 当前组件实例
 const currentInstance = getCurrentInstance()
 
-import { useMenuStore } from "/store/menu"
 const menuStore = useMenuStore()
 
 // 获取数据

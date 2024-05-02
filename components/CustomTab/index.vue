@@ -4,7 +4,7 @@
             <view>鼠鼠的个人菜单</view>
             <view class="btns">
                 <view>
-                    <image src="/static/image/menu/search.png" alt="" />
+                    <image src="/static/image/menu/search.png" alt="" @click="toSearch" />
                 </view>
                 <view>
                     <image src="/static/image/menu/QR.png" alt="" />
@@ -18,8 +18,14 @@
 </template>
 
 <script setup>
-
 const { statusBarHeight, menuWidth, menuHeight, menuRight, menuTop, contentTop } = uni.getStorageSync('menuInfo')
+
+// 跳转搜索页 商家搜索
+const toSearch = () => {
+    uni.navigateTo({
+        url: `/pages/search/index?type=1`
+    });
+}
 
 </script>
 
