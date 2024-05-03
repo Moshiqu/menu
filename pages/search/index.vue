@@ -3,9 +3,10 @@
         <view class="search_page_top">
             <view class="search_bar">
                 <image src="/static/image/common/search.png" mode="scaleToFill" class="prefix_icon" />
-                <input class="search_input" focus :placeholder="searchConfig.placeholder" />
+                <input class="search_input" focus :placeholder="searchConfig.placeholder" v-model="searchValue"
+                    confirm-type="search" @confirm="searchHandler" />
             </view>
-            <view class="search_btn">搜索</view>
+            <view class="search_btn" @click="searchHandler">搜索</view>
         </view>
         <view class="search_page_content">
             <view class="search_history">
@@ -40,15 +41,25 @@
                     </text>
                 </view>
             </view>
-            <view class="search_result">
-                <image src="/static/image/default_img.jpg" mode="scaleToFill" class="avatar" />
-                <view class="search_result_content">
-                    <view class="name">这个是店名</view>
-                    <view class="product_num">商品总数：99</view>
-                    <view class="like_num">获赞数量：99
-                        <image src="/static/image/menu/icon_like.png" mode="scaleToFill" class="icon" />
+            <view class="search_result" v-if="isSearched">
+                <view class="search_result_title">搜索结果</view>
+                <template v-if="resultList.length">
+                    <view class="search_result_item" v-for="item in resultList" :key="item.id">
+                        <image src="/static/image/default_img.jpg" mode="scaleToFill" class="avatar" />
+                        <view class="search_result_content">
+                            <view class="name">{{ item.nick_name }}</view>
+                            <view class="description">{{ item.description }}</view>
+                            <view class="product_num">商品总数：{{ item.total_product_num }}</view>
+                            <view class="like_num">获赞数量：{{ item.total_like_num }}
+                                <image src="/static/image/menu/icon_like.png" mode="scaleToFill" class="icon" />
+                            </view>
+                            <view class="confirm_btn">去TA的商店</view>
+                        </view>
                     </view>
-                    <view class="confirm_btn">去TA的商店</view>
+                </template>
+                <view v-else class="no_result_box">
+                    <image src="/static/image/common/no_result.png" mode="scaleToFill" class="no_result_img" />
+                    <text>暂无结果</text>
                 </view>
             </view>
         </view>
@@ -56,23 +67,43 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { onLoad } from "@dcloudio/uni-app"
+import { config } from './config'
 
 // 获取跳转参数
 onLoad((query) => {
-    // type 1:商家搜索
     if (JSON.stringify(query) != "{}") {
         const { type } = query
-        searchConfig.value = searchTypeConfig.find(item => item.type = type)
+        searchConfig.value = config.find(item => item.type = type)
     }
 })
 
-const searchTypeConfig = [{ type: 1, placeholder: '请输入商家昵称或商家id' }]
+const searchConfig = ref({ type: 0, placeholder: "", emptySearchValue: '输入框不能为空' })
 
-const searchConfig = ref({ type: 0, placeholder: "" })
+const searchValue = ref('')
 
-// TODO 写搜索接口, 保存搜索结果到storage中
+const resultList = ref([])
+
+const isSearched = ref(false)
+
+// TODO 保存搜索历史到storage中
+
+const searchHandler = () => {
+    if (!searchValue.value) return uni.showToast({ title: searchConfig.value.emptySearchValue, icon: "none" })
+    isSearched.value = true
+    uni.showLoading({ title: '搜索中', mask: true })
+
+    if (!searchConfig.value.searchApi) return
+    searchConfig.value.searchApi({ value: searchValue.value }).then(res => {
+        uni.hideLoading()
+        if (res.code !== 200) return uni.showToast({ title: res.message || '搜索失败', icon: "none" })
+        resultList.value = res.data
+    }).catch(err => {
+        uni.hideLoading()
+        uni.showToast({ title: err.Msg || err.errMsg || '搜索失败', icon: "none" })
+    })
+}
 
 </script>
 
@@ -144,67 +175,102 @@ const searchConfig = ref({ type: 0, placeholder: "" })
                     background-color: #fff;
                     color: #797979;
                     margin-right: 10rpx;
-                    margin-bottom: 30rpx;
+                    margin-bottom: 20rpx;
                 }
             }
         }
 
         .search_result {
-            box-sizing: border-box;
-            width: 100%;
-            background-color: #fff;
-            border: 2rpx solid #e6e9f7;
-            border-radius: 40rpx;
-            padding: 20rpx 40rpx;
-            display: flex;
-
-
-            .avatar {
-                width: 154rpx;
-                height: 154rpx;
-                border-radius: 20rpx;
-                margin-right: 20rpx;
+            .search_result_title {
+                font-weight: 700;
+                margin-bottom: 30rpx;
             }
 
-            .search_result_content {
-                flex: 1;
-                position: relative;
+            .search_result_item {
+                box-sizing: border-box;
+                width: 100%;
+                background-color: #fff;
+                border: 2rpx solid #e6e9f7;
+                border-radius: 40rpx;
+                padding: 20rpx;
                 display: flex;
-                flex-direction: column;
-                justify-content: space-between;
+                margin-bottom: 20rpx;
 
-                .name {
-                    font-weight: 700;
+                .avatar {
+                    width: 154rpx;
+                    height: 154rpx;
+                    border-radius: 20rpx;
+                    margin-right: 20rpx;
+                }
+
+                .search_result_content {
+                    flex: 1;
+                    position: relative;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: nowrap;
-                    margin-bottom: 20px;
-                }
 
-                .product_num,
-                .like_num {
-                    display: inline-block;
-                    font-size: 24rpx;
-                    color: #999;
-                    display: flex;
-                    align-items: flex-end;
-
-                    .icon {
-                        width: 40rpx;
-                        height: 40rpx;
-                        margin-left: 10rpx;
+                    .name {
+                        font-weight: 700;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
                     }
+
+                    .description {
+                        font-size: 24rpx;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+
+                    .product_num,
+                    .like_num {
+                        display: inline-block;
+                        font-size: 24rpx;
+                        color: #999;
+                        display: flex;
+                        align-items: flex-end;
+
+                        .icon {
+                            width: 40rpx;
+                            height: 40rpx;
+                            margin-left: 10rpx;
+                        }
+                    }
+
+                    .confirm_btn {
+                        position: absolute;
+                        bottom: 0;
+                        right: 0;
+                        // TODO 优化样式
+                    }
+
+                }
+            }
+
+            .no_result_box {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+                .no_result_img {
+                    width: 370px;
+                    height: calc(370px / 1.88);
                 }
 
-                .confirm_btn {
-                    position: absolute;
-                    bottom: 0;
-                    right: 0;
-                    // TODO 优化样式
+                text {
+                    margin-top: 40rpx;
+                    color: #4a7dff;
+                    font-size: 24px;
                 }
-
             }
         }
+
+
     }
 }
 </style>
