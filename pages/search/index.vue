@@ -3,48 +3,26 @@
         <view class="search_page_top">
             <view class="search_bar">
                 <image src="/static/image/common/search.png" mode="scaleToFill" class="prefix_icon" />
-                <input class="search_input" focus :placeholder="searchConfig.placeholder" v-model="searchValue"
+                <input class="search_input" focus :placeholder="searchConfig.placeholder" v-model.trim="searchValue"
                     confirm-type="search" @confirm="searchHandler" />
             </view>
             <view class="search_btn" @click="searchHandler">搜索</view>
         </view>
         <view class="search_page_content">
-            <view class="search_history">
+            <view class="search_history" v-if="searchHistoryList.length">
                 <view class="search_history_title">历史搜索</view>
                 <view class="search_history_labels">
-                    <text class="history_label">
-                        瑞纳冰
-                    </text>
-                    <text class="history_label">
-                        冰镇杨纳冰
-                    </text>
-                    <text class="history_label">
-                        冰镇杨梅瑞纳冰
-                    </text>
-                    <text class="history_label">
-                        冰纳冰
-                    </text>
-                    <text class="history_label">
-                        冰镇杨梅瑞纳冰
-                    </text>
-                    <text class="history_label">
-                        冰冰
-                    </text>
-                    <text class="history_label">
-                        冰镇杨梅瑞纳冰
-                    </text>
-                    <text class="history_label">
-                        冰镇杨梅瑞纳冰
-                    </text>
-                    <text class="history_label">
-                        冰镇杨梅瑞纳冰
+                    <text class="history_label" v-for="(item, index) in searchHistoryList" :key="index"
+                        @click="searchValue = item, searchHandler()">
+                        {{ item }}
                     </text>
                 </view>
             </view>
             <view class="search_result" v-if="isSearched">
                 <view class="search_result_title">搜索结果</view>
                 <template v-if="resultList.length">
-                    <view class="search_result_item" v-for="item in resultList" :key="item.id">
+                    <view class="search_result_item" v-for="item in resultList" :key="item.id"
+                        @click="toOtherStore(item.id)">
                         <image src="/static/image/default_img.jpg" mode="scaleToFill" class="avatar" />
                         <view class="search_result_content">
                             <view class="name">{{ item.nick_name }}</view>
@@ -67,9 +45,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { onLoad } from "@dcloudio/uni-app"
 import { config } from './config'
+import { useMenuStore } from '/store/menu';
 
 // 获取跳转参数
 onLoad((query) => {
@@ -79,6 +58,7 @@ onLoad((query) => {
     }
 })
 
+// 搜索
 const searchConfig = ref({ type: 0, placeholder: "", emptySearchValue: '输入框不能为空' })
 
 const searchValue = ref('')
@@ -86,8 +66,6 @@ const searchValue = ref('')
 const resultList = ref([])
 
 const isSearched = ref(false)
-
-// TODO 保存搜索历史到storage中
 
 const searchHandler = () => {
     if (!searchValue.value) return uni.showToast({ title: searchConfig.value.emptySearchValue, icon: "none" })
@@ -99,10 +77,43 @@ const searchHandler = () => {
         uni.hideLoading()
         if (res.code !== 200) return uni.showToast({ title: res.message || '搜索失败', icon: "none" })
         resultList.value = res.data
+
+        // 保存搜索的值
+        const defaultObj = {}
+        defaultObj[`type_${searchConfig.value.type}`] = []
+
+        const storage = uni.getStorageSync('search_history') || defaultObj
+        const typeStorage = storage[`type_${searchConfig.value.type}`]
+        if (typeStorage.includes(searchValue.value)) typeStorage.splice(typeStorage.indexOf(searchValue.value), 1)
+        typeStorage.unshift(searchValue.value)
+
+        const typeStorage10 = typeStorage.length > 10 ? typeStorage.slice(0, 10) : typeStorage
+        storage[`type_${searchConfig.value.type}`] = typeStorage10
+        uni.setStorageSync('search_history', storage)
     }).catch(err => {
         uni.hideLoading()
         uni.showToast({ title: err.Msg || err.errMsg || '搜索失败', icon: "none" })
+    }).finally(() => {
+        searchHistoryList.value = uni.getStorageSync('search_history')[`type_${searchConfig.value.type}`] || []
     })
+}
+
+// 搜索历史
+const searchHistoryList = ref([])
+
+onMounted(() => {
+    searchHistoryList.value = uni.getStorageSync('search_history')[`type_${searchConfig.value.type}`] || []
+})
+
+// 跳转首页, 搜索其他店家商品
+
+const menuStore = useMenuStore()
+const toOtherStore = (userId) => {
+    console.log(userId);
+
+    menuStore.resetCartList()
+    // TODO 跳转首页, 并携带参数
+    // uni.switchTab({ url: `/pages/menu/index` })
 }
 
 </script>
@@ -246,7 +257,6 @@ const searchHandler = () => {
                         position: absolute;
                         bottom: 0;
                         right: 0;
-                        // TODO 优化样式
                     }
 
                 }
