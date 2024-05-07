@@ -23,9 +23,10 @@
 <script setup>
 import CustomTab from "/components/CustomTab/index.vue"
 import TreeSelect from './components/TreeSelect.vue'
-const { menuHeight, menuTop } = uni.getStorageSync('menuInfo')
-
+import { onLoad } from "@dcloudio/uni-app"
 import { ref } from 'vue'
+
+const { menuHeight, menuTop } = uni.getStorageSync('menuInfo')
 
 const isEdit = ref(false)
 const treeSelectRef = ref(null)
@@ -39,6 +40,12 @@ const addHandler = () => {
         url: '/pages/productionManagement/index'
     });
 }
+
+// 跳转到首页， 获取商店id
+onLoad((option) => {
+    console.log(option);
+    // TODO 跳转切换menu_id
+})
 
 </script>
 

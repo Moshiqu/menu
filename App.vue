@@ -1,6 +1,7 @@
 <script>
 import { getOpenID, check } from "@/api/user";
 import { useMenuStore } from "/store/menu"
+import { useUserStore } from "/store/userInfo";
 
 export default {
     onLaunch: function async() {
@@ -25,8 +26,9 @@ export default {
                             uni.setStorageSync('token', res.data.token)
                             const menuStore = useMenuStore()
                             menuStore.getMenuListByApi()
+                            const userStore = useUserStore()
+                            userStore.setUserInfo(res.data)
                             uni.hideLoading()
-
                         }).catch(err => {
                             uni.showToast({
                                 title: err.Msg || err.message || '检查用户失败',

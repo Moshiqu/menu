@@ -109,11 +109,13 @@ onMounted(() => {
 
 const menuStore = useMenuStore()
 const toOtherStore = (userId) => {
-    console.log(userId);
-
     menuStore.resetCartList()
     // TODO 跳转首页, 并携带参数
+    // uni.setStorageSync('storeId', userId)
     // uni.switchTab({ url: `/pages/menu/index` })
+    uni.reLaunch({
+        url: `/pages/menu/index?storeId=${userId}`
+    });
 }
 
 </script>

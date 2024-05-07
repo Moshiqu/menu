@@ -41,8 +41,8 @@ const addCate = () => {
 }
 
 // 获取用户信息
-import { userUserInfoStore } from "/store/userInfo";
-const userInfoStore = userUserInfoStore()
+import { useUserStore } from "/store/userInfo";
+const userInfoStore = useUserStore()
 
 // 保存分类
 const saveCate = (cateValue) => {

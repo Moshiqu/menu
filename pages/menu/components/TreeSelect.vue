@@ -147,7 +147,6 @@ const parentClickHandler = (id) => {
 
 // 添加产品和减少产品
 // 添加 减少
-
 const plusMinusHandler = throttle((categoryId, product, type = 'plus') => {
     switch (type) {
         case 'plus':

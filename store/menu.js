@@ -4,6 +4,7 @@ import { cloneDeep } from 'lodash'
 
 export const useMenuStore = defineStore("menu", {
     state: () => ({
+        menuId: 0,
         menuList: [],
         cartList: [],
     }),
@@ -138,7 +139,6 @@ export const useMenuStore = defineStore("menu", {
                 this.cartList.splice(cate_index, 1)
             }
         }
-
     },
     unistorage: true
 })
