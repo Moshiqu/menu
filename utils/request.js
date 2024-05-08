@@ -16,7 +16,24 @@ function handleRequest(options, resolve, reject) {
             Authorization: `Bearer ${uni.getStorageSync('token')}`
         },
         success: (response) => {
-            if (response.data.code != 200) return reject(response.data)
+            // 非后台内部错误
+            if (response.statusCode !== 200) {
+                return uni.showToast({
+                    title: '出错了~',
+                    icon: 'none',
+                    mask: true
+                })
+            }
+
+            // 后台内部错误
+            if (response.data.code != 200) {
+                return uni.showToast({
+                    title: response.data.message,
+                    icon: 'none',
+                    mask: true
+                })
+            }
+
             return resolve(response.data)
         },
         fail: (fail) => {

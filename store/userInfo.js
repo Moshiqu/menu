@@ -1,17 +1,22 @@
 import { defineStore } from "pinia"
+import { getUserInfo } from "/api/user"
 
 export const useUserStore = defineStore("userInfo", {
     state: () => ({
-        userInfo: {
-            user_id: 0
-        }
+        userInfo: {}
     }),
     getters: {
 
     },
     actions: {
-        setUserInfo(data) {
-            this.userInfo = { ...this.userInfo, ...data }
+        setUserInfo() {
+            getUserInfo().then(res => {
+                if(res.code == 200){
+                    this.userInfo = { ...this.userInfo, ...res.data }
+                }
+            }).catch(err => {
+
+            })
         }
     },
     unistorage: true

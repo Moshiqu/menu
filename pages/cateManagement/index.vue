@@ -64,8 +64,7 @@ const saveCate = (cateValue) => {
         return
     }
 
-    const userId = userInfoStore.userInfo.user_id
-    addCategory({ cateName: cateValue, userId }).then(res => {
+    addCategory({ cateName: cateValue }).then(res => {
         if (res.code === 200) {
             uni.showToast({ title: "添加分类成功", icon: "none" })
             menuStore.getMenuListByApi()

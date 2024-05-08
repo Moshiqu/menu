@@ -24,10 +24,12 @@ export default {
 
                         check({ openid: res.data.openid }).then(res => {
                             uni.setStorageSync('token', res.data.token)
+                            // 获取菜单列表
                             const menuStore = useMenuStore()
                             menuStore.getMenuListByApi()
+                            // 获取用户信息
                             const userStore = useUserStore()
-                            userStore.setUserInfo(res.data)
+                            userStore.setUserInfo()
                             uni.hideLoading()
                         }).catch(err => {
                             uni.showToast({

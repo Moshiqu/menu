@@ -42,7 +42,7 @@ export const useMenuStore = defineStore("menu", {
     },
     actions: {
         // 菜单
-        setMenuList(list) {
+        setMenuList(list, storeId = 0) {
             if (this.cartList.length) {
                 // 回显购物车和列表
                 const cateAndProductList = []
@@ -72,14 +72,16 @@ export const useMenuStore = defineStore("menu", {
                     })
                 })
             }
+            this.menuId = storeId
             this.menuList = list;
         },
-        getMenuListByApi() {
+        getMenuListByApi(storeId = 0) {
             // uni.showLoading()
-            getMenu().then(res => {
+            console.log(storeId);
+            getMenu({ storeId }).then(res => {
                 // uni.hideLoading()
                 if (res.code == 200) {
-                    this.setMenuList(res.data)
+                    this.setMenuList(res.data, storeId)
                 } else {
                     uni.showToast({ title: "获取菜单失败", icon: "none" })
                 }

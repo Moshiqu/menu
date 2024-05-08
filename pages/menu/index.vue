@@ -16,7 +16,7 @@
                 <view class="btn" @click="addHandler">添加</view>
             </view>
         </view>
-        <TreeSelect :isEdit=isEdit ref="treeSelectRef" />
+        <TreeSelect :isEdit=isEdit ref="treeSelectRef" :storeId="storeId" />
     </view>
 </template>
 
@@ -43,9 +43,12 @@ const addHandler = () => {
 
 // 跳转到首页， 获取商店id
 onLoad((option) => {
-    console.log(option);
-    // TODO 跳转切换menu_id
+    console.log(option,'--->menu option');
+    storeId.value = option.storeId
 })
+
+
+const storeId = ref(0)
 
 </script>
 

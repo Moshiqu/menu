@@ -83,9 +83,8 @@
 import MkDialog from '/components/MkDialog'
 import MkLoading from '/components/MkLoading'
 import CartPop from './CartPop.vue'
-import { ref, nextTick, getCurrentInstance, computed, watch, defineProps, onMounted } from 'vue'
+import { ref, nextTick, getCurrentInstance, watch, defineProps, onMounted } from 'vue'
 import { throttle } from 'lodash'
-import { getMenu } from '/api/menu'
 import { deleteProduct } from '/api/menu';
 import { updateSort } from '/api/menu'
 import { useMenuStore } from "/store/menu"
@@ -95,16 +94,17 @@ const currentInstance = getCurrentInstance()
 
 const menuStore = useMenuStore()
 
+// TODO 权限控制
+
+const $props = defineProps({
+    isEdit: Boolean,
+    storeId: Number
+});
+
 // 获取数据
-const getMenuHandler = () => {
-    uni.showLoading({ title: '正在加载...', icon: 'loading', mask: true })
-    getMenu().then(res => {
-        menuStore.setMenuList(res.data)
-    }).catch(err => {
-    }).finally(() => {
-        uni.hideLoading()
-    })
-}
+onMounted(() => {
+    if ($props.storeId) menuStore.getMenuListByApi($props.storeId)
+})
 
 // 激活的分类id
 const parentActiveId = ref(-1)
@@ -243,10 +243,6 @@ const getBoundingClientRect = async (selector) => {
 }
 
 // 编辑
-const $props = defineProps({
-    isEdit: Boolean,
-});
-
 const productMove = (up, cate, product, productIndex) => {
     const params = { value1: { id: 0, sortIndex: 0 }, value2: { id: 0, sortIndex: 0 } }
 
@@ -258,7 +254,7 @@ const productMove = (up, cate, product, productIndex) => {
 
     uni.showLoading({ title: "", mask: true })
     updateSort(params).then(res => {
-        getMenuHandler()
+        menuStore.getMenuListByApi()
     }).catch(err => {
         uni.showToast({ title: '修改排序失败', icon: "error" })
     }).finally(() => {
@@ -286,7 +282,7 @@ const deleteProductHandler = () => {
     // 调用删除接口
     deleteProduct({ id: currentProduct.value.id }).then((result) => {
         uni.showToast({ title: "删除成功", icon: 'success' })
-        getMenuHandler()
+        menuStore.getMenuListByApi()
     }).catch((err) => {
         uni.showToast({ title: "删除失败", icon: 'error' })
     }).finally(() => {
