@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash'
 
 export const useMenuStore = defineStore("menu", {
     state: () => ({
-        menuId: 0,
+        menuId: -1,
         menuList: [],
         cartList: [],
     }),
@@ -77,7 +77,6 @@ export const useMenuStore = defineStore("menu", {
         },
         getMenuListByApi(storeId = 0) {
             // uni.showLoading()
-            console.log(storeId);
             getMenu({ storeId }).then(res => {
                 // uni.hideLoading()
                 if (res.code == 200) {

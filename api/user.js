@@ -11,3 +11,6 @@ export const searchUser = (options) => request({ url: '/api/user/searchStore', m
 
 // 获取用户信息
 export const getUserInfo = (options) => request({ url: '/api/user/getUserInfo', method: "GET", data: options })
+
+// 获取商家用户信息
+export const getStoreUserInfo = (options) => request({ url: '/api/user/getStoreUserInfo', method: "GET", data: options })

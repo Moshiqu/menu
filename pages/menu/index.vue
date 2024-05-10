@@ -6,7 +6,7 @@
             <image src="/static/image/default_img.jpg" class="avatar" />
             <view class="info">
                 <view class="username">
-                    <text>呀拉索</text>
+                    <text>{{ infoData.nick_name }}</text>
                     <text class="edit_btn" v-if="isEdit">编辑</text>
                 </view>
                 <view class="contact">联系商家 ></view>
@@ -24,7 +24,9 @@
 import CustomTab from "/components/CustomTab/index.vue"
 import TreeSelect from './components/TreeSelect.vue'
 import { onLoad } from "@dcloudio/uni-app"
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useMenuStore } from '/store/menu.js';
+import { getStoreUserInfo } from '/api/user.js'
 
 const { menuHeight, menuTop } = uni.getStorageSync('menuInfo')
 
@@ -42,14 +44,41 @@ const addHandler = () => {
 }
 
 // 跳转到首页， 获取商店id
+const storeId = ref(0)
 onLoad((option) => {
-    console.log(option,'--->menu option');
-    storeId.value = option.storeId
+    storeId.value = option.storeId || 0
 })
 
+const infoData = ref({})
 
-const storeId = ref(0)
+const menuStore = useMenuStore()
 
+let timer = null
+
+const getInfoData = () => {
+    clearInterval(timer)
+    const params = {}
+    if (storeId.value > 0) {
+        params.storeId = storeId.value
+    }
+    getStoreUserInfo(params).then(res => {
+        if (res.code != 200) return uni.showToast({ title: '获取用户信息失败', icon: "none" })
+        infoData.value = res.data
+    }).catch(err => {
+        uni.showToast({ title: '获取用户信息失败', icon: "none" })
+    })
+}
+watch(() => menuStore.menuId, (nv) => {
+    if (nv != -1) {
+        getInfoData()
+    } else {
+        timer = setInterval(() => {
+            getInfoData()
+        }, 1000);
+    }
+}, { immediate: true })
+
+// 是否是本人的商店
 </script>
 
 <style lang="less" scoped>
