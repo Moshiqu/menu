@@ -61,7 +61,7 @@ onLoad((query) => {
 // 搜索
 const searchConfig = ref({ type: 0, placeholder: "", emptySearchValue: '输入框不能为空' })
 
-const searchValue = ref('')
+const searchValue = ref('大青蛙')
 
 const resultList = ref([])
 

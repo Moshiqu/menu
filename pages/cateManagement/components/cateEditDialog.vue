@@ -3,7 +3,7 @@
         <view class="dialog_card">
             <view class="card_container">
                 <view class="card_title">{{ cate ? '编辑' : '新增' }}分类</view>
-                <input type="text" v-model="cateName" placeholder="请输入分类名称">
+                <input type="text" v-model.trim="cateName" placeholder="请输入分类名称">
             </view>
             <view class="card_operation">
                 <view class="cancel" @click="cancel">取消</view>

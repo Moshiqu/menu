@@ -5,8 +5,8 @@
             <view class="production_material_tile">用料</view>
             <view class="material_container">
                 <view class="material_row" v-for="(item, index) in materialData" :key="index">
-                    <input class="material_name" placeholder="食材：如面粉" v-model="item.material_name" />
-                    <input class="material_quantity" placeholder="用量：如100g" v-model="item.material_quantity" />
+                    <input class="material_name" placeholder="食材：如面粉" v-model.trim="item.material_name" />
+                    <input class="material_quantity" placeholder="用量：如100g" v-model.trim="item.material_quantity" />
                     <view class="material_delete" v-if="index" @click="deleteMaterial(index)">
                         <image src="/static/image/common/close.png" />
                     </view>

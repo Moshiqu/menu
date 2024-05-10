@@ -57,7 +57,6 @@ const $props = defineProps()
 
 const $emits = defineEmits(['update:isShowCart', 'plusMinusHandler'])
 
-console.log(menuStore.cartProductsList);
 const plusMinusProductHandler = (product, type) => {
     if (type === 'minus' && product.selectNum === 1) {
         return uni.showModal({
@@ -75,11 +74,12 @@ const plusMinusProductHandler = (product, type) => {
 
 // 购物车总金额
 const totalPrice = computed(() => {
-    console.log(menuStore.cartProductsList);
     return menuStore.cartProductsList.reduce((acc, cur) => {
         return acc + cur.selectNum * cur.product_price
     }, 0).toFixed(2)
 })
+
+// TODO 提交订单功能(userStore的userInfo.id 如果和menuStore的menuId 相同的话, 则阻止)
 
 
 </script>

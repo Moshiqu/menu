@@ -11,7 +11,7 @@
                     名称
                 </view>
                 <view class="editor">
-                    <input confirm-type="确定" type="text" placeholder="请输入商品名称" v-model="productName" />
+                    <input confirm-type="确定" type="text" placeholder="请输入商品名称" v-model.trim="productName" />
                 </view>
             </view>
             <view class="production_cate">
@@ -39,7 +39,7 @@
                     价格
                 </view>
                 <view class="editor price_editor">
-                    <input confirm-type="确定" type="digit" placeholder="只是标识使用 不能真实收钱" v-model="productPrice"
+                    <input confirm-type="确定" type="digit" placeholder="只是标识使用 不能真实收钱" v-model.trim="productPrice"
                         @change="priceChangeHandler" />
                     <text class="price_unit">元</text>
                 </view>

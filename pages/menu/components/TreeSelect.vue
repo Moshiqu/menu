@@ -94,7 +94,7 @@ const currentInstance = getCurrentInstance()
 
 const menuStore = useMenuStore()
 
-// TODO 权限控制
+// TODO 权限控制 非当前用户不显示分类管理
 
 const $props = defineProps({
     isEdit: Boolean,

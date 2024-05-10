@@ -10,8 +10,9 @@
                 </view>
             </view>
             <view class="dialog-btns">
-                <view class="cancel" hover-class="cancel-hover" @click="closeDialog">取消</view>
-                <view class="confirm" hover-class="cancel-hover" @click="confirmHandler">确认</view>
+                <view class="cancel" hover-class="cancel-hover" @click="closeDialog" v-if="!$props.hideCancel">取消</view>
+                <view class="confirm" hover-class="cancel-hover" @click="confirmHandler"
+                    :style="{ width: $props.hideCancel ? '100%' : '', border: $props.hideCancel ? 'none' : '' }">确认</view>
             </view>
         </view>
     </view>
@@ -22,7 +23,8 @@ import { defineProps, defineEmits } from 'vue'
 
 const $props = defineProps({
     title: { type: String, default: '标题' },
-    description: { type: String, default: '这个是内容信息' }
+    description: { type: String, default: '这个是内容信息' },
+    hideCancel: { type: Boolean, default: false }
 })
 const $emits = defineEmits(['confirm', 'update:showDialog'])
 

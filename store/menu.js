@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash'
 
 export const useMenuStore = defineStore("menu", {
     state: () => ({
-        menuId: -1,
+        menuId: -1, // -1:无数据情况; 0: 当前用户所属商店id; 其他:当前菜单所属id
         menuList: [],
         cartList: [],
     }),
@@ -38,6 +38,10 @@ export const useMenuStore = defineStore("menu", {
                 }
                 return accumulator
             }, [])
+        },
+        // 菜单是否属于当前用户
+        isMe() {
+            return !this.menuId
         }
     },
     actions: {
