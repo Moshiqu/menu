@@ -8,7 +8,7 @@
                     <view class="dot" v-if="calDot(item.id)">{{ calDot(item.id) }}</view>
                 </view>
                 <view :class="['tab category_set', parentActiveId === -1 ? 'active' : '']" style="color: #2678fa;"
-                    @click="parentClickHandler(-1)">
+                    @click="parentClickHandler(-1)" v-if="isMe">
                     分类管理
                 </view>
                 <view :style="{ background: '#fff', paddingBottom: '300rpx' }">
@@ -83,7 +83,7 @@
 import MkDialog from '/components/MkDialog'
 import MkLoading from '/components/MkLoading'
 import CartPop from './CartPop.vue'
-import { ref, nextTick, getCurrentInstance, watch, defineProps, onMounted } from 'vue'
+import { ref, nextTick, getCurrentInstance, watch, defineProps, onMounted, computed } from 'vue'
 import { throttle } from 'lodash'
 import { deleteProduct } from '/api/menu';
 import { updateSort } from '/api/menu'
@@ -93,8 +93,6 @@ import { useMenuStore } from "/store/menu"
 const currentInstance = getCurrentInstance()
 
 const menuStore = useMenuStore()
-
-// TODO 权限控制 非当前用户不显示分类管理
 
 const $props = defineProps({
     isEdit: Boolean,
@@ -296,6 +294,9 @@ const toDetail = (productionId) => {
         url: `/pages/productionDetail/index?productionId=${productionId}`
     });
 }
+
+// 是否是本人的商店
+const isMe = computed(() => menuStore.isMe)
 
 </script>
 
