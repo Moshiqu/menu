@@ -29,7 +29,7 @@
                 <view v-if="showMonth" class="uni-calendar__box-bg">
                     <text class="uni-calendar__box-bg-text">{{ nowDate.month }}</text>
                 </view>
-                <view class="uni-calendar__weeks">
+                <view class="uni-calendar__weeks uni-calendar__weeks__title">
                     <view class="uni-calendar__weeks-day">
                         <text class="uni-calendar__weeks-day-text">{{ SUNText }}</text>
                     </view>
@@ -52,12 +52,15 @@
                         <text class="uni-calendar__weeks-day-text">{{ SATText }}</text>
                     </view>
                 </view>
-                <view class="uni-calendar__weeks" v-for="(item, weekIndex) in weeks" :key="weekIndex">
-                    <view class="uni-calendar__weeks-item" v-for="(weeks, weeksIndex) in item" :key="weeksIndex">
+                <view class="uni-calendar__weeks" v-for="(item, weekIndex) in computedWeeks" :key="weekIndex" @click="showa">
+                    <view class="uni-calendar__weeks-item" v-for="(weeks, weeksIndex) in item" :key="weeksIndex"  v-if="item.some(w=>!w.disable)">
                         <calendar-item class="uni-calendar-item--hook" :weeks="weeks" :calendar="calendar"
                             :selected="selected" :lunar="lunar" @change="choiceDate"></calendar-item>
                     </view>
                 </view>
+            </view>
+            <view :class="['uni-calendar__expand', isAbb ? 'uni-calendar__translateY__bottom':'uni-calendar__translateY__top']">
+                <view :class="['uni-calendar__footer-btn', isAbb ? 'uni-calendar--bottom':'uni-calendar--top']"></view>
             </view>
         </view>
     </view>
@@ -77,6 +80,7 @@ const { t } = initVueI18n(i18nMessages)
  * @tutorial https://ext.dcloud.net.cn/plugin?id=56
  * @property {String} date 自定义当前时间，默认为今天
  * @property {Boolean} lunar 显示农历
+ * @property {Boolean} isAbb 仅显示选中的那周
  * @property {String} startDate 日期选择范围-开始日期
  * @property {String} endDate 日期选择范围-结束日期
  * @property {Boolean} range 范围选择
@@ -86,7 +90,7 @@ const { t } = initVueI18n(i18nMessages)
  * @property {Boolean} clearDate = [true|false] 弹窗模式是否清空上次选择内容
  * @property {Array} selected 打点，期待格式[{date: '2019-06-27', info: '签到', data: { custom: '自定义信息', name: '自定义消息头',xxx:xxx... }}]
  * @property {Boolean} showMonth 是否选择月份为背景
- * @event {Function} change 日期改变，`insert :ture` 时生效
+ * @event {Function} change 日期改变，`insert :true` 时生效
  * @event {Function} confirm 确认选择`insert :false` 时生效
  * @event {Function} monthSwitch 切换月份时触发
  * @example <uni-calendar :insert="true":lunar="true" :start-date="'2019-3-2'":end-date="'2019-5-20'"@change="change" />
@@ -129,11 +133,15 @@ export default {
         },
         showMonth: {
             type: Boolean,
-            default: true
+            default: false
         },
         clearDate: {
             type: Boolean,
             default: true
+        },
+        isAbb:{
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -180,6 +188,10 @@ export default {
         SUNText() {
             return t("uni-calender.SUN")
         },
+        computedWeeks(){
+            if(!this.isAbb) return this.weeks
+            // TODO 简略形式, 仅展示当前所选择日期的那一周
+        }
     },
     watch: {
         date(newVal) {
@@ -211,6 +223,10 @@ export default {
         this.init(this.date)
     },
     methods: {
+        showa(){
+            console.log(this.weeks);
+            console.log();
+        },
         // 取消穿透
         clean() { },
         bindDateChange(e) {
@@ -231,6 +247,7 @@ export default {
             this.cale.setDate(date)
             this.weeks = this.cale.weeks
             this.nowDate = this.calendar = this.cale.getInfo(date)
+            console.log(this.weeks);
         },
         /**
          * 打开日历弹窗
@@ -380,11 +397,11 @@ export default {
 <style lang="scss" scoped>
 $uni-bg-color-mask: rgba($color: #000000, $alpha: 0.4);
 $uni-border-color: #EDEDED;
-$uni-text-color: #333;
+$uni-text-color: #777;
 $uni-bg-color-hover: #f1f1f1;
-$uni-font-size-base: 14px;
-$uni-text-color-placeholder: #808080;
-$uni-color-subtitle: #555555;
+$uni-font-size-base: 16px;
+$uni-text-color-placeholder: #777;
+$uni-color-subtitle: #777;
 $uni-text-color-grey: #999;
 
 .uni-calendar {
@@ -434,7 +451,8 @@ $uni-text-color-grey: #999;
 }
 
 .uni-calendar__content {
-    background-color: #fff;
+    background-color: #fbf2c9;
+    border-radius: 20rpx;
 }
 
 .uni-calendar__header {
@@ -445,10 +463,7 @@ $uni-text-color-grey: #999;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    height: 50px;
-    border-bottom-color: $uni-border-color;
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
+    height: 40px;
 }
 
 .uni-calendar--fixed-top {
@@ -495,8 +510,8 @@ $uni-text-color-grey: #999;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
 }
 
 .uni-calendar__header-btn {
@@ -518,6 +533,13 @@ $uni-text-color-grey: #999;
     transform: rotate(135deg);
 }
 
+.uni-calendar--bottom {
+    transform: rotate(45deg);
+}
+
+.uni-calendar--top {
+    transform: rotate(225deg);
+}
 
 .uni-calendar__weeks {
     position: relative;
@@ -525,11 +547,24 @@ $uni-text-color-grey: #999;
     display: flex;
     /* #endif */
     flex-direction: row;
+    justify-content: space-between;
+    margin-top: 20rpx;
+
+    &:nth-child(2),
+    &:last-child{
+        margin-top: 0;
+    }
 }
 
-.uni-calendar__weeks-item {
-    flex: 1;
+.uni-calendar__weeks__title{
+    margin-top: 0;
 }
+
+// .uni-calendar__weeks-item {
+//     // flex: 1;
+//     border-radius: 14rpx;
+//     overflow: hidden;
+// }
 
 .uni-calendar__weeks-day {
     flex: 1;
@@ -540,17 +575,16 @@ $uni-text-color-grey: #999;
     justify-content: center;
     align-items: center;
     height: 45px;
-    border-bottom-color: #F5F5F5;
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
 }
 
 .uni-calendar__weeks-day-text {
     font-size: 14px;
+    color: #777;
 }
 
 .uni-calendar__box {
     position: relative;
+    padding: 0 20rpx;
 }
 
 .uni-calendar__box-bg {
@@ -575,5 +609,31 @@ $uni-text-color-grey: #999;
     /* #ifndef APP-NVUE */
     line-height: 1;
     /* #endif */
+}
+
+.uni-calendar__expand{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40rpx;
+}
+
+.uni-calendar__footer-btn{
+    width: 10px;
+    height: 10px;
+    border-left-color: $uni-text-color-placeholder;
+    border-left-style: solid;
+    border-left-width: 2px;
+    border-top-color: $uni-color-subtitle;
+    border-top-style: solid;
+    border-top-width: 2px;
+}
+
+.uni-calendar__translateY__bottom{
+    transform: translateY(4px);
+}
+
+.uni-calendar__translateY__top{
+    transform: translateY(-4px);
 }
 </style>

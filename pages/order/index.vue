@@ -1,6 +1,6 @@
 <template>
     <view class="order_page">
-        <Calendar @change="change" />
+        <Calendar @change="change" :isAbb="false" />
     </view>
 </template>
 
@@ -14,6 +14,6 @@ const change = () => {
 
 <style scoped lang="less">
 .order_page {
-    padding: 40rpx;
+    padding: 40rpx 20rpx;
 }
 </style>
