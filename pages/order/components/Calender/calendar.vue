@@ -59,8 +59,8 @@
                     </view>
                 </view>
             </view>
-            <view :class="['uni-calendar__expand', isAbb ? 'uni-calendar__translateY__bottom':'uni-calendar__translateY__top']">
-                <view :class="['uni-calendar__footer-btn', isAbb ? 'uni-calendar--bottom':'uni-calendar--top']"></view>
+            <view :class="['uni-calendar__expand', isAbb ? 'uni-calendar__translateY__top':'uni-calendar__translateY__bottom']">
+                <view :class="['uni-calendar__footer-btn', isAbb ? ' uni-calendar--top':'uni-calendar--bottom']"></view>
             </view>
         </view>
     </view>
