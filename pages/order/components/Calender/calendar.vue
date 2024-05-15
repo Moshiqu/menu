@@ -12,15 +12,15 @@
                     <text class="uni-calendar__header-text uni-calendar--fixed-width">{{ okText }}</text>
                 </view>
             </view>
-            <view class="uni-calendar__header">
-                <view class="uni-calendar__header-btn-box" @click.stop="pre">
+            <view class="uni-calendar__header" :style="`justify-content: ${!isAbb ? 'space-between':'center'}`">
+                <view class="uni-calendar__header-btn-box" @click.stop="pre" v-if="!isAbb">
                     <view class="uni-calendar__header-btn uni-calendar--left"></view>
                 </view>
                 <picker mode="date" :value="date" fields="month" @change="bindDateChange">
                     <text class="uni-calendar__header-text">{{ arabicToChinese(nowDate.month) + ' ' + nowDate.year
                     }}</text>
                 </picker>
-                <view class="uni-calendar__header-btn-box" @click.stop="next">
+                <view class="uni-calendar__header-btn-box" @click.stop="next" v-if="!isAbb">
                     <view class="uni-calendar__header-btn uni-calendar--right"></view>
                 </view>
                 <!-- <text class="uni-calendar__backtoday" @click="backToday">{{ todayText }}</text> -->
@@ -52,15 +52,17 @@
                         <text class="uni-calendar__weeks-day-text">{{ SATText }}</text>
                     </view>
                 </view>
-                <view class="uni-calendar__weeks" v-for="(item, weekIndex) in computedWeeks" :key="weekIndex" @click="showa">
+                <view class="uni-calendar__weeks" v-for="(item, weekIndex) in computedWeeks" :key="weekIndex">
                     <view class="uni-calendar__weeks-item" v-for="(weeks, weeksIndex) in item" :key="weeksIndex"  v-if="item.some(w=>!w.disable)">
                         <calendar-item class="uni-calendar-item--hook" :weeks="weeks" :calendar="calendar"
                             :selected="selected" :lunar="lunar" @change="choiceDate"></calendar-item>
                     </view>
                 </view>
             </view>
-            <view :class="['uni-calendar__expand', isAbb ? 'uni-calendar__translateY__top':'uni-calendar__translateY__bottom']">
-                <view :class="['uni-calendar__footer-btn', isAbb ? ' uni-calendar--top':'uni-calendar--bottom']"></view>
+            <view
+                :class="['uni-calendar__expand', isAbb ? 'uni-calendar__translateY__top' : 'uni-calendar__translateY__bottom']"
+                @click="exchangeAbbHandler">
+                <view :class="['uni-calendar__footer-btn', isAbb ? ' uni-calendar--top' : 'uni-calendar--bottom']"></view>
             </view>
         </view>
     </view>
@@ -72,6 +74,7 @@ import CalendarItem from './calendar-item.vue'
 
 import { initVueI18n } from '@dcloudio/uni-i18n'
 import i18nMessages from './i18n/index.js'
+import { reactive } from 'vue'
 const { t } = initVueI18n(i18nMessages)
 
 /**
@@ -99,7 +102,7 @@ export default {
     components: {
         CalendarItem
     },
-    emits: ['close', 'confirm', 'change', 'monthSwitch'],
+    emits: ['close', 'confirm', 'change', 'monthSwitch', 'update:isAbb'],
     props: {
         date: {
             type: String,
@@ -139,7 +142,7 @@ export default {
             type: Boolean,
             default: true
         },
-        isAbb:{
+        isAbb: {
             type: Boolean,
             default: false
         }
@@ -188,9 +191,21 @@ export default {
         SUNText() {
             return t("uni-calender.SUN")
         },
-        computedWeeks(){
+        computedWeeks() {
             if(!this.isAbb) return this.weeks
-            // TODO 简略形式, 仅展示当前所选择日期的那一周
+
+            let existList = reactive({})
+
+            for (const key in this.weeks) {
+                if (Object.hasOwnProperty.call(this.weeks, key)) {
+                    const element = this.weeks[key];
+                    if (element.some(item => { return item.fullDate && item.fullDate == this.calendar.fullDate })) {
+                        existList = {0:element}
+                        break;
+                    }
+                }
+            }
+            return existList
         }
     },
     watch: {
@@ -223,10 +238,6 @@ export default {
         this.init(this.date)
     },
     methods: {
-        showa(){
-            console.log(this.weeks);
-            console.log();
-        },
         // 取消穿透
         clean() { },
         bindDateChange(e) {
@@ -247,7 +258,6 @@ export default {
             this.cale.setDate(date)
             this.weeks = this.cale.weeks
             this.nowDate = this.calendar = this.cale.getInfo(date)
-            console.log(this.weeks);
         },
         /**
          * 打开日历弹窗
@@ -389,7 +399,13 @@ export default {
             const numList = [-1, '一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二']
             return `${numList[Number(num)]}月`
         },
-
+        /**
+         * 切换缩略和全部
+         */
+        exchangeAbbHandler() {
+            this.init(this.calendar.fullDate)
+            this.$emit('update:isAbb', !this.isAbb)
+        }
     }
 }
 </script>
@@ -550,13 +566,12 @@ $uni-text-color-grey: #999;
     justify-content: space-between;
     margin-top: 20rpx;
 
-    &:nth-child(2),
-    &:last-child{
+    &:nth-child(2){
         margin-top: 0;
     }
 }
 
-.uni-calendar__weeks__title{
+.uni-calendar__weeks__title {
     margin-top: 0;
 }
 
@@ -611,14 +626,14 @@ $uni-text-color-grey: #999;
     /* #endif */
 }
 
-.uni-calendar__expand{
+.uni-calendar__expand {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 40rpx;
 }
 
-.uni-calendar__footer-btn{
+.uni-calendar__footer-btn {
     width: 10px;
     height: 10px;
     border-left-color: $uni-text-color-placeholder;
@@ -629,11 +644,10 @@ $uni-text-color-grey: #999;
     border-top-width: 2px;
 }
 
-.uni-calendar__translateY__bottom{
+.uni-calendar__translateY__bottom {
     transform: translateY(4px);
 }
 
-.uni-calendar__translateY__top{
+.uni-calendar__translateY__top {
     transform: translateY(-4px);
-}
-</style>
+}</style>

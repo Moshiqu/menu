@@ -1,11 +1,15 @@
 <template>
     <view class="order_page">
-        <Calendar @change="change" :isAbb="false" />
+        <Calendar @change="change" v-model:isAbb="isAbb" />
     </view>
 </template>
 
 <script setup>
 import Calendar from './components/Calender/calendar.vue'
+import { ref } from 'vue'
+
+// 是否缩略
+const isAbb = ref(false)
 
 const change = () => {
 
