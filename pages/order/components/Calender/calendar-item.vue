@@ -6,6 +6,7 @@
         'uni-calendar-item--before-checked': weeks.beforeMultiple,
         'uni-calendar-item--multiple': weeks.multiple,
         'uni-calendar-item--after-checked': weeks.afterMultiple,
+        'uni-calendar-item--today': weeks.isDay
     }" @click="choiceDate(weeks)">
         <view class="uni-calendar-item__weeks-box-item">
             <text v-if="selected && weeks.extraInfo" class="uni-calendar-item__weeks-box-circle"
@@ -150,6 +151,10 @@ $uni-primary: #2979ff !default;
 
 }
 
+.uni-calendar-item--today{
+    background-color: red;
+}
+
 .uni-calendar-item--disable {
     // background-color: rgba(249, 249, 249, $uni-opacity-disabled);
     background-color: #f9eba9;
@@ -160,8 +165,9 @@ $uni-primary: #2979ff !default;
 .uni-calendar-item--isDay-text {
     // color: $uni-primary;
     color: #fff;
-
 }
+
+
 
 .uni-calendar-item--isDay {
     // background-color: $uni-primary;
