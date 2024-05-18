@@ -55,7 +55,7 @@
                 <view class="uni-calendar__weeks" v-for="(item, weekIndex) in computedWeeks" :key="weekIndex">
                     <view class="uni-calendar__weeks-item" v-for="(weeks, weeksIndex) in item" :key="weeksIndex"  v-if="item.some(w=>!w.disable)">
                         <calendar-item class="uni-calendar-item--hook" :weeks="weeks" :calendar="calendar"
-                            :selected="selected" :lunar="lunar" @change="choiceDate"></calendar-item>
+                            :selected="selected" :lunar="lunar" :showDot="showDot" @change="choiceDate"></calendar-item>
                     </view>
                 </view>
             </view>
@@ -153,7 +153,8 @@ export default {
             weeks: [],
             calendar: {},
             nowDate: '',
-            aniMaskShow: false
+            aniMaskShow: false,
+            showDot: false,
         }
     },
     computed: {
@@ -344,6 +345,7 @@ export default {
          */
         choiceDate(weeks) {
             if (weeks.disable) return
+            this.showDot = true
             this.calendar = weeks
             // 设置多选
             this.cale.setMultiple(this.calendar.fullDate)

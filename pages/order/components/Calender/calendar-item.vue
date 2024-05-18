@@ -1,8 +1,7 @@
 <template>
     <view class="uni-calendar-item__weeks-box" :class="{
         'uni-calendar-item--disable': weeks.disable,
-        'uni-calendar-item--isDay': calendar.fullDate === weeks.fullDate && weeks.isDay,
-        'uni-calendar-item--checked': (calendar.fullDate === weeks.fullDate && !weeks.isDay),
+        'uni-calendar-item--checked': (showDot && calendar.fullDate === weeks.fullDate),
         'uni-calendar-item--before-checked': weeks.beforeMultiple,
         'uni-calendar-item--multiple': weeks.multiple,
         'uni-calendar-item--after-checked': weeks.afterMultiple,
@@ -80,6 +79,10 @@ export default {
         lunar: {
             type: Boolean,
             default: false
+        },
+        showDot:{
+            type:Boolean,
+            default: false
         }
     },
     computed: {
@@ -89,7 +92,7 @@ export default {
     },
     methods: {
         choiceDate(weeks) {
-            console.log(this.selected);
+            console.log(this.weeks);
             this.$emit('change', weeks)
         }
     }
@@ -171,19 +174,19 @@ $uni-primary: #2979ff !default;
     // opacity: 0.8;
     color: #fff;
 
-    position: relative;
+    // position: relative;
 
-    &.uni-calendar-item__weeks-box {
-        &::after{
-            content: " ";
-            width: 12rpx;
-            height: 12rpx;
-            position: absolute;
-            bottom: 18rpx;
-            background-color: $uni-text-color;
-            border-radius: 6rpx;
-        }
-    }
+    // &.uni-calendar-item__weeks-box {
+    //     &::after{
+    //         content: " ";
+    //         width: 12rpx;
+    //         height: 12rpx;
+    //         position: absolute;
+    //         bottom: 18rpx;
+    //         background-color: transparent;
+    //         border-radius: 6rpx;
+    //     }
+    // }
 }
 
 .uni-calendar-item--extra {
