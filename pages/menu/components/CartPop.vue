@@ -39,7 +39,7 @@
                         <text class="">选好了，提交订单</text>
                     </button> -->
                     <view class="cart_btns">
-                        <view class="btn_clean">一键清空</view>
+                        <view class="btn_clean" @click="menuStore.resetCartList()">一键清空</view>
                         <view class="btn_confirm">
                             <text class="money" v-if="Number(totalPrice)">￥{{ totalPrice }}</text>
                             <text class="">确认下单</text>
