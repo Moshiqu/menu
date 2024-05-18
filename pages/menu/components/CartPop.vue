@@ -34,10 +34,17 @@
                             </view>
                         </view>
                     </scroll-view>
-                    <button class="confirm_btn">
+                    <!-- <button class="confirm_btn">
                         <text class="money">￥{{ totalPrice }}</text>
                         <text class="">选好了，提交订单</text>
-                    </button>
+                    </button> -->
+                    <view class="cart_btns">
+                        <view class="btn_clean">一键清空</view>
+                        <view class="btn_confirm">
+                            <text class="money" v-if="Number(totalPrice)">￥{{ totalPrice }}</text>
+                            <text class="">确认下单</text>
+                        </view>
+                    </view>
                 </template>
                 <view class="empty-cart" v-else>
                     <image src="/static/image/menu/empty_cart.png" mode="scaleToFill" />
@@ -192,24 +199,58 @@ const totalPrice = computed(() => {
                 }
             }
 
-            .confirm_btn {
+            .cart_btns {
                 position: fixed;
                 bottom: 40rpx;
                 left: 50%;
                 transform: translateX(-50%);
-                width: 80%;
-                height: 80rpx;
+                width: 90%;
+                height: 90rpx;
                 background-color: #f6c33d;
                 border-radius: 40rpx;
                 font-size: 32rpx;
+                display: flex;
+                overflow: hidden;
+                font-size: 14px;
+                font-weight: 700;
 
-                .money {
-                    color: #e94f30;
-                    font-size: 28rpx;
-                    margin-right: 20rpx;
-                    font-weight: 700;
+                &>view {
+                    width: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .btn_clean {
+                    background-color: #fff;
+                }
+
+                .btn_confirm {
+                    .money {
+                        font-size: 28rpx;
+                        margin-right: 10rpx;
+                    }
                 }
             }
+
+            // .confirm_btn {
+            //     position: fixed;
+            //     bottom: 40rpx;
+            //     left: 50%;
+            //     transform: translateX(-50%);
+            //     width: 80%;
+            //     height: 80rpx;
+            //     background-color: #f6c33d;
+            //     border-radius: 40rpx;
+            //     font-size: 32rpx;
+
+            //     .money {
+            //         color: #e94f30;
+            //         font-size: 28rpx;
+            //         margin-right: 20rpx;
+            //         font-weight: 700;
+            //     }
+            // }
 
             .empty-cart {
                 display: flex;
