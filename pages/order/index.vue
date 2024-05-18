@@ -1,6 +1,6 @@
 <template>
     <view class="order_page">
-        <Calendar @change="change" v-model:isAbb="isAbb" />
+        <Calendar @change="change" v-model:isAbb="isAbb" :selected="selectedDayList" />
         <view class="tab_bar">
             <view class="tab_bar_switch">
                 <view :class="['tab_item', activeTab == 1 ? 'tab_active' : '']" @click="activeTab = 1">
@@ -42,8 +42,10 @@ const isAbb = ref(true)
 
 // 日期改变事件
 const change = (dateObj) => {
-    console.log(dateObj);
+    // console.log(dateObj);
 }
+
+const selectedDayList = ref([{ date: '2024-05-17' },{ date: '2024-05-07' }])
 
 // tab栏
 const activeTab = ref(1)

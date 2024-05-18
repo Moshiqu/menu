@@ -6,11 +6,11 @@
         'uni-calendar-item--before-checked': weeks.beforeMultiple,
         'uni-calendar-item--multiple': weeks.multiple,
         'uni-calendar-item--after-checked': weeks.afterMultiple,
-        'uni-calendar-item--today': weeks.isDay
+        'uni-calendar-item--selected':selected && weeks.extraInfo
     }" @click="choiceDate(weeks)">
         <view class="uni-calendar-item__weeks-box-item">
-            <text v-if="selected && weeks.extraInfo" class="uni-calendar-item__weeks-box-circle"
-                :style="weeks.extraInfo.dropColor ? 'background-color: ' + weeks.extraInfo.dropColor : ''"></text>
+            <!-- <text v-if="selected && weeks.extraInfo" class="uni-calendar-item__weeks-box-circle"
+                :style="weeks.extraInfo.dropColor ? 'background-color: ' + weeks.extraInfo.dropColor : ''"></text> -->
             <text class="uni-calendar-item__weeks-box-text" :class="{
                 'uni-calendar-item--isDay-text': weeks.isDay,
                 'uni-calendar-item--isDay': calendar.fullDate === weeks.fullDate && weeks.isDay,
@@ -89,6 +89,7 @@ export default {
     },
     methods: {
         choiceDate(weeks) {
+            console.log(this.selected);
             this.$emit('change', weeks)
         }
     }
@@ -149,10 +150,6 @@ $uni-primary: #2979ff !default;
     border-radius: 8px;
     background-color: $uni-color-error;
 
-}
-
-.uni-calendar-item--today{
-    background-color: red;
 }
 
 .uni-calendar-item--disable {
@@ -228,5 +225,9 @@ $uni-primary: #2979ff !default;
 .uni-calendar-item--after-checked {
     background-color: #ff5a5f;
     color: #fff;
+}
+
+.uni-calendar-item--selected{
+    background-color: #ef621c;
 }
 </style>
