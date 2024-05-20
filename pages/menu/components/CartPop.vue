@@ -34,15 +34,11 @@
                             </view>
                         </view>
                     </scroll-view>
-                    <!-- <button class="confirm_btn">
-                        <text class="money">￥{{ totalPrice }}</text>
-                        <text class="">选好了，提交订单</text>
-                    </button> -->
                     <view class="cart_btns">
-                        <view class="btn_clean" @click="menuStore.resetCartList()">一键清空</view>
-                        <view class="btn_confirm">
+                        <view class="btn_clean" @click="cleanCart">一键清空</view>
+                        <view class="btn_confirm" @click="cartConfirm">
                             <text class="money" v-if="Number(totalPrice)">￥{{ totalPrice }}</text>
-                            <text class="">确认下单</text>
+                            <text>确认下单</text>
                         </view>
                     </view>
                 </template>
@@ -86,8 +82,25 @@ const totalPrice = computed(() => {
     }, 0).toFixed(2)
 })
 
-// TODO 提交订单功能(userStore的userInfo.id 如果和menuStore的menuId 相同的话, 则阻止)
+// 一键清空购物车
+const cleanCart = () => {
+    uni.showModal({
+        title: '提示',
+        content: '确定要移除所有商品吗?',
+        success: (res) => {
+            if (res.confirm) {
+                menuStore.resetCartList()
+            }
+        }
+    })
+}
 
+// TODO 提交订单功能(userStore的userInfo.id 如果和menuStore的menuId 相同的话, 则阻止)
+const cartConfirm = () => {
+    uni.navigateTo({
+        url: `/pages/preOrder/index`
+    });
+}
 
 </script>
 
@@ -232,25 +245,6 @@ const totalPrice = computed(() => {
                     }
                 }
             }
-
-            // .confirm_btn {
-            //     position: fixed;
-            //     bottom: 40rpx;
-            //     left: 50%;
-            //     transform: translateX(-50%);
-            //     width: 80%;
-            //     height: 80rpx;
-            //     background-color: #f6c33d;
-            //     border-radius: 40rpx;
-            //     font-size: 32rpx;
-
-            //     .money {
-            //         color: #e94f30;
-            //         font-size: 28rpx;
-            //         margin-right: 20rpx;
-            //         font-weight: 700;
-            //     }
-            // }
 
             .empty-cart {
                 display: flex;

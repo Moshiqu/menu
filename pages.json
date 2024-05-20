@@ -48,6 +48,12 @@
             "style": {
                 "navigationBarTitleText": "搜索"
             }
+        },
+        {
+            "path": "pages/preOrder/index",
+            "style": {
+                "navigationBarTitleText": "订单确认"
+            }
         }
     ],
     "globalStyle": {

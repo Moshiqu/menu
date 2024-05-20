@@ -27,8 +27,6 @@ const toSearch = () => {
     });
 }
 
-// TODO 替换死数据
-
 </script>
 
 <style lang="less" scoped>
