@@ -31,6 +31,7 @@ export const useMenuStore = defineStore("menu", {
 
             return num
         },
+        // 购物车内所有商品
         cartProductsList() {
             return this.cartList.reduce((accumulator, currentValue) => {
                 if (currentValue.children && currentValue.children.length) {
