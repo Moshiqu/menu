@@ -53,11 +53,14 @@
                 </view>
             </view>
         </view>
-        <view class="make_now selected">立即制作</view>
-        <view class="make_time">
-            <view class="make_time_title">预约时间</view>
-            <view class="make_time_time">请选择预约时间</view>
-        </view>
+        <view :class="['make_now', orderMakeTime == 'now' ? 'selected' : '']" @click="orderMakeTime = 'now'">立即制作</view>
+        <picker mode="time" :start="moment().format('HH:mm')" end="23:59" @change="bindTimeChange">
+            <view :class="['make_time', orderMakeTime == 'now' ? '' : 'selected']" @click="chooseTime">
+                <view class="make_time_title">预约时间</view>
+                <view class="make_time_time" :style="{ color: makeTime ? '#333' : '' }">{{ makeTime || '请选择预约时间'
+                }}</view>
+            </view>
+        </picker>
         <view class="order_remark">
             <view class="order_remark_title">备注</view>
             <view class="textarea_box">
@@ -66,18 +69,35 @@
                     customStyle="min-height:36rpx;margin:0;text-align:right;font-size:16px;">
                 </EasyInput>
             </view>
+            <view class="text_num" slot="right">{{ remark_num }}/50</view>
         </view>
         <view class="confirm_btn"></view>
+
     </view>
 </template>
 
 <script setup>
 import EasyInput from '/components/EasyInput/uni-easyinput.vue'
-import { ref } from 'vue'
-
-// TODO 备注显示最大输入字符数50, 检查 为什么备注的高度不对
+import moment from 'moment';
+import { ref, computed } from 'vue'
 
 const remark = ref('')
+
+const remark_num = computed(() => {
+    return remark.value.length
+})
+
+// 选择时间
+const orderMakeTime = ref('now')
+const makeTime = ref('')
+
+const chooseTime = () => {
+    orderMakeTime.value = 'time'
+}
+
+const bindTimeChange = (e) => {
+    makeTime.value = e.target.value
+}
 
 </script>
 
@@ -157,6 +177,7 @@ const remark = ref('')
         color: #7d6566;
 
         margin-top: 40rpx;
+        box-sizing: border-box;
     }
 
     .make_time {
@@ -180,9 +201,17 @@ const remark = ref('')
         align-items: center;
 
         margin-top: 40rpx;
+        position: relative;
+        padding-bottom: 50rpx;
 
         .textarea_box {
             width: 500rpx;
+        }
+
+        .text_num {
+            position: absolute;
+            bottom: 12rpx;
+            right: 40rpx;
         }
     }
 
