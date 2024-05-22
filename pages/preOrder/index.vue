@@ -21,9 +21,10 @@
                 </view>
             </view>
         </view>
-        <view :class="['make_now', orderMakeTime == 'now' ? 'selected' : '']" @click="orderMakeTime = 'now'">立即制作</view>
+        <view :class="['make_now', orderMakeTime == 'right_now' ? 'selected' : '']" @click="orderMakeTime = 'right_now'">
+            立即制作</view>
         <picker mode="time" :start="moment().format('HH:mm')" end="23:59" @change="bindTimeChange">
-            <view :class="['make_time', orderMakeTime == 'now' ? '' : 'selected']" @click="orderMakeTime = 'time'">
+            <view :class="['make_time', orderMakeTime == 'right_now' ? '' : 'selected']" @click="orderMakeTime = 'time'">
                 <view class="make_time_title">预约时间</view>
                 <view class="make_time_time" :style="{ color: makeTime ? '#333' : '' }">{{ makeTime || '请选择预约时间'
                 }}</view>
@@ -50,6 +51,7 @@ import EasyInput from '/components/EasyInput/uni-easyinput.vue'
 import moment from 'moment';
 import { ref, computed } from 'vue'
 import { useMenuStore } from '@/store/menu';
+import { confirmOrder } from '/api/order.js'
 
 // 购物车数据
 const menuStore = useMenuStore()
@@ -71,7 +73,7 @@ const remark_num = computed(() => {
 })
 
 // 选择时间
-const orderMakeTime = ref('now')
+const orderMakeTime = ref('right_now')
 const makeTime = ref('')
 
 const bindTimeChange = (e) => {
@@ -80,6 +82,8 @@ const bindTimeChange = (e) => {
 
 // 提交订单
 const submit = () => {
+    if (!menuStore.menuId) return uni.showToast({ title: "不能给自己下单哦~", icon: 'none', mask: true })
+
     const productsList = []
 
     if (orderMakeTime.value === 'time' && !makeTime.value) {
@@ -91,18 +95,37 @@ const submit = () => {
     }
 
     orderList.value.forEach(item => {
-        productsList.push([item.id, item.selectNum])
+        productsList.push([item.id, item.selectNum, item.product_price || 0])
     })
 
     const param = {
         orderMakeTime: orderMakeTime.value,
-        makeTime: orderMakeTime.value === 'time' ? makeTime : undefined,
+        makeTime: orderMakeTime.value === 'time' ? makeTime.value : undefined,
         remark: remark.value || undefined,
-        products: orderList
+        products: productsList,
+        ownerId: menuStore.menuId,
+        orderPrice: Number(totalPrice.value).toFixed(2) || 0
     }
     // TODO 写订单接口
 
-    console.log(param)
+    uni.showLoading()
+    confirmOrder(param).then(res => {
+        console.log(res);
+        if (res.code == 200) {
+            uni.hideLoading()
+            uni.showToast({ title: '下单成功', icon: 'none', mask: true })
+            setTimeout(() => {
+                uni.switchTab({ url: '/pages/order/index' })
+            }, 1000);
+        }
+    }).catch(err => {
+        uni.hideLoading()
+        uni.showToast({
+            title: '生成订单失败,请重新下单',
+            icon: 'none',
+            mask: true
+        })
+    })
 }
 
 </script>

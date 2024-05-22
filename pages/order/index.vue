@@ -178,7 +178,7 @@
 <script setup>
 import Calendar from './components/Calender/calendar.vue'
 import { ref, computed, watch } from 'vue'
-// TODO 调试接口
+// TODO 1. 获取所有有订单的日期, 写入到日历中, 点击日历块, 查询当日订单; 2.获取当日饭店订单, 用watch监听tabId, 个人订单同理; 3. 点击展开历史订单, 调用接口获取非当日的订单(近30天内的订单);
 
 // 日历是否缩略
 const isAbb = ref(true)
