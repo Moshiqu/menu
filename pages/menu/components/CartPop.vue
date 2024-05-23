@@ -95,7 +95,6 @@ const cleanCart = () => {
     })
 }
 
-// TODO 提交订单功能(userStore的userInfo.id 如果和menuStore的menuId 相同的话, 则阻止)
 const cartConfirm = () => {
     uni.navigateTo({
         url: `/pages/preOrder/index`

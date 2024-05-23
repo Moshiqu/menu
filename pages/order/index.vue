@@ -12,136 +12,52 @@
             </view>
             <view class="tab_bar_content">
                 <view class="tab_tip">{{ tabConfig[activeTab].tip }}</view>
-                <!-- <image :src="tabConfig[activeTab].emptyImg" mode="scaleToFill" class="empty_img" /> -->
+                <image :src="tabConfig[activeTab].emptyImg" mode="scaleToFill" class="empty_img" v-if="!orderList.length" />
                 <view class="order_content">
-                    <view class="order_card">
+                    <view class="order_card" v-for="order in  orderList " :key="order.id">
                         <view class="card_title">
                             <view class="create_time">
                                 <text>制作时间：</text>
-                                <text>202-05-18 17:41:47</text>
+                                <text>{{ $formateTime(order.make_time) }}</text>
                             </view>
                             <view class="order_status">已下单</view>
                         </view>
                         <view class="card_productions_content">
                             <!-- 缩略信息 -->
-                            <view class="productions_items">
+                            <view class="productions_items" v-if="!order.showDetail">
                                 <scroll-view class="order_content_scroll_bar" scroll-x="true" :enable-flex="true">
-                                    <view class="production_item">
+                                    <view class="production_item" v-for=" product  in  order.orderProducts"
+                                        :key="product.id">
                                         <image src="/static/image/default_img.jpg" mode="scaleToFill"
                                             class="production_img" />
-                                        <view class="production_name">这个是番茄炖牛肉</view>
-                                    </view>
-                                    <view class="production_item">
-                                        <image src="/static/image/default_img.jpg" mode="scaleToFill"
-                                            class="production_img" />
-                                        <view class="production_name">这个是番茄炖牛肉</view>
-                                    </view>
-                                    <view class="production_item">
-                                        <image src="/static/image/default_img.jpg" mode="scaleToFill"
-                                            class="production_img" />
-                                        <view class="production_name">这个是番茄炖牛肉</view>
-                                    </view>
-                                    <view class="production_item">
-                                        <image src="/static/image/default_img.jpg" mode="scaleToFill"
-                                            class="production_img" />
-                                        <view class="production_name">这个是番茄炖牛肉</view>
-                                    </view>
-                                    <view class="production_item">
-                                        <image src="/static/image/default_img.jpg" mode="scaleToFill"
-                                            class="production_img" />
-                                        <view class="production_name">这个是番茄炖牛肉</view>
+                                        <view class="production_name">{{ product.product_name }}</view>
                                     </view>
                                 </scroll-view>
                                 <view class="card_price_bar">
-                                    <view class="total_price">￥10122.30</view>
-                                    <view class="total_count">共12件</view>
+                                    <view class="total_price">￥{{ order.order_price }}</view>
+                                    <view class="total_count">共{{ order.orderProducts.length }}件</view>
                                 </view>
                             </view>
                             <!-- 全部信息 -->
-                            <view class="productions_detail_items">
-                                <view class="production_item">
+                            <view class="productions_detail_items" v-else>
+                                <view class="production_item" v-for="product in order.orderProducts" :key="product.id">
                                     <view class="production_content">
                                         <view class="production_item_img_box">
                                             <image src="/static/image/default_img.jpg" mode="scaleToFill" />
                                         </view>
                                         <view class="production_item_content">
-                                            <view class="production_name">
-                                                这个是番茄炖牛肉
-                                            </view>
-                                            <view class="account">x1</view>
+                                            <view class="production_name">{{ product.product_name }}</view>
+                                            <view class="account">x{{ product.product_num }}</view>
                                         </view>
                                     </view>
                                     <view class="production_item_total_price">
-                                        ￥10122
-                                    </view>
-                                </view>
-                                <view class="production_item">
-                                    <view class="production_content">
-                                        <view class="production_item_img_box">
-                                            <image src="/static/image/default_img.jpg" mode="scaleToFill" />
-                                        </view>
-                                        <view class="production_item_content">
-                                            <view class="production_name">
-                                                这个是番茄炖牛肉
-                                            </view>
-                                            <view class="account">x1</view>
-                                        </view>
-                                    </view>
-                                    <view class="production_item_total_price">
-                                        ￥10122
-                                    </view>
-                                </view>
-                                <view class="production_item">
-                                    <view class="production_content">
-                                        <view class="production_item_img_box">
-                                            <image src="/static/image/default_img.jpg" mode="scaleToFill" />
-                                        </view>
-                                        <view class="production_item_content">
-                                            <view class="production_name">
-                                                这个是番茄炖牛肉
-                                            </view>
-                                            <view class="account">x1</view>
-                                        </view>
-                                    </view>
-                                    <view class="production_item_total_price">
-                                        ￥10122
-                                    </view>
-                                </view>
-                                <view class="production_item">
-                                    <view class="production_content">
-                                        <view class="production_item_img_box">
-                                            <image src="/static/image/default_img.jpg" mode="scaleToFill" />
-                                        </view>
-                                        <view class="production_item_content">
-                                            <view class="production_name">
-                                                这个是番茄炖牛肉
-                                            </view>
-                                            <view class="account">x1</view>
-                                        </view>
-                                    </view>
-                                    <view class="production_item_total_price">
-                                        ￥10122
-                                    </view>
-                                </view>
-                                <view class="production_item">
-                                    <view class="production_content">
-                                        <view class="production_item_img_box">
-                                            <image src="/static/image/default_img.jpg" mode="scaleToFill" />
-                                        </view>
-                                        <view class="production_item_content">
-                                            <view class="production_name">
-                                                这个是番茄炖牛肉
-                                            </view>
-                                            <view class="account">x1</view>
-                                        </view>
-                                    </view>
-                                    <view class="production_item_total_price">
-                                        ￥10122
+                                        ￥{{ Number(product.product_num * (product.product_price || 0)).toFixed(2) }}
                                     </view>
                                 </view>
                             </view>
-                            <view class="card_abb_btn">
-                                <image src="/static/image/common/down.png" mode="scaleToFill" />
+                            <view class="card_abb_btn" @click="order.showDetail = !order.showDetail">
+                                <image src="/static/image/common/down.png" mode="scaleToFill"
+                                    :class="[order.showDetail ? 'top' : '']" />
                             </view>
                         </view>
                         <view class="card_information">
@@ -177,19 +93,20 @@
 
 <script setup>
 import Calendar from './components/Calender/calendar.vue'
-import { ref, computed, watch } from 'vue'
-// TODO 1. 获取所有有订单的日期, 写入到日历中, 点击日历块, 查询当日订单; 2.获取当日饭店订单, 用watch监听tabId, 个人订单同理; 3. 点击展开历史订单, 调用接口获取非当日的订单(近30天内的订单);
+import { ref, computed, watch, onMounted } from 'vue'
+import { getProcessingOrder, getOrderByDate } from '/api/order'
+// TODO  1:未点击日历前, 展示的是进行中的订单, 点击下方的历史订单, 则展示除进行中订单外的所有订单(近一周) 2: 写接口, 获取包含订单的年月日, 写入日历组件
 
 // 日历是否缩略
 const isAbb = ref(true)
 
 // 日期改变事件
 const change = (dateObj) => {
-    // console.log(dateObj);
+    currentDate.value = dateObj.fulldate
+    getOrderListByDate()
 }
 
 // 所选日期
-// TODO 未选择日期, 展示所有新订单和历史所有订单
 const currentDate = ref('')
 
 const selectedDayList = ref([{ date: '2024-05-17' }, { date: '2024-05-07' }])
@@ -205,18 +122,69 @@ const tabConfig = ref({
     2: { tip: "个人订单是你下过的订单", emptyImg: '/static/image/order-empty-2.png', isOpen: false }
 })
 
-watch(() => activeTab, () => {
+watch(() => activeTab.value, () => {
     for (const key in tabConfig.value) {
         if (Object.hasOwnProperty.call(tabConfig.value, key)) {
             const element = tabConfig.value[key];
             element.isOpen = false
         }
     }
+    if (!currentDate.value) {
+        getOrderListByProcessing()
+    } else {
+        getOrderListByDate()
+    }
 })
 
 // 展开历史订单
 const openHistoryOrder = () => {
     tabConfig.value[activeTab.value].isOpen = true
+}
+
+onMounted(() => {
+    getOrderListByProcessing()
+})
+
+const orderList = ref([])
+
+// 获取进行中的订单
+const getOrderListByProcessing = () => {
+    uni.showLoading()
+
+    const param = {
+        classic: activeTab.value
+    }
+
+    getProcessingOrder(param).then(res => {
+        orderList.value = res.data
+        orderList.value.forEach(item => item.showDetail = false)
+        console.log(orderList.value);
+    }).catch(err => {
+        console.log(err, '---err');
+    }).finally(() => {
+        uni.hideLoading()
+    })
+}
+
+// 根据日期获取订单
+const getOrderListByDate = () => {
+    uni.showLoading()
+
+    const param = {
+        classic: activeTab.value,
+        date: currentDate.value
+    }
+
+    if (!param.date) return uni.showToast({ title: "未选择日期", icon: "none", mask: true })
+
+    getOrderByDate(param).then(res => {
+        orderList.value = res.data
+        orderList.value.forEach(item => item.showDetail = false)
+    }).catch(err => {
+        console.log(err, '===');
+    }).finally(() => {
+        uni.hideLoading()
+    })
 }
 
 </script>
@@ -278,6 +246,7 @@ const openHistoryOrder = () => {
                     border-radius: 20rpx;
                     padding: 20rpx;
                     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
+                    margin-bottom: 20rpx;
 
                     .card_title {
                         display: flex;
@@ -386,6 +355,10 @@ const openHistoryOrder = () => {
                             &>image {
                                 width: 28rpx;
                                 height: 28rpx;
+                            }
+
+                            .top{
+                                transform: rotate(180deg);
                             }
                         }
                     }

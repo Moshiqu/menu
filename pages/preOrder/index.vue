@@ -95,7 +95,7 @@ const submit = () => {
     }
 
     orderList.value.forEach(item => {
-        productsList.push([item.id, item.selectNum, item.product_price || 0])
+        productsList.push([item.id, item.product_name, item.selectNum, item.product_price || 0])
     })
 
     const param = {
@@ -106,7 +106,6 @@ const submit = () => {
         ownerId: menuStore.menuId,
         orderPrice: Number(totalPrice.value).toFixed(2) || 0
     }
-    // TODO 写订单接口
 
     uni.showLoading()
     confirmOrder(param).then(res => {
