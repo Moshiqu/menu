@@ -11,3 +11,15 @@ export const getOrderByDate = (options) => request({ url: '/api/order/getOrderBy
 
 // 获取有订单的日期
 export const getOrderDate = (options) => request({ url: '/api/order/getOrderDate', method: "post", data: options })
+
+// 作为商家 取消订单
+export const deleteOrderByOwner = (options) => request({ url: '/api/order/deleteOrder', method: "post", data: options })
+
+// 作为商家 修改订单状态 待制作=>制作中
+export const startMakeByOwner = (options) => request({ url: '/api/order/startMake', method: "post", data: options })
+
+// 作为商家 修改订单状态 制作中=>制作完成
+export const finishMakeByOwner = (options) => request({ url: '/api/order/finishMake', method: "post", data: options })
+
+// 作为商家 修改订单状态 制作完成=>订单完成
+export const finishOrderByConsumer = (options) => request({ url: '/api/order/finishOrder', method: "post", data: options })

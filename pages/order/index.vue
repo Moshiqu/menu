@@ -61,26 +61,27 @@
                             </view>
                         </view>
                         <view class="card_information">
-                            <!-- TODO 如果是饭店订单, 用户信息显示下单人的信息; 如果是个人订单, 用户信息显示菜单所属商户信息 -->
                             <view class="userInfo">
                                 <view class="avatar">
                                     <image src="/static/image/default_img.jpg" mode="scaleToFill" />
                                 </view>
-                                <view class="username">活捉一枚雪</view>
+                                <view class="username">{{ activeTab == 1 ? order.consumerInfo.nick_name :
+                                    order.ownerInfo.nick_name }}</view>
                             </view>
                             <view class="btns" v-if="activeTab == 1">
                                 <button class="red_btn" type="default" size="mini" :plain="true"
-                                    v-if="order.order_status == 1">开始制作</button>
+                                    v-if="order.order_status == 1" @click="btnHandlerByOwner(order)">开始制作</button>
                                 <button class="red_btn" type="default" size="mini" :plain="true"
-                                    v-else-if="order.order_status == 2">制作完成</button>
+                                    v-else-if="order.order_status == 2" @click="btnHandlerByOwner(order)">制作完成</button>
 
                                 <button class="yellow_btn" type="default" size="mini" :plain="true"
-                                    v-if="order.order_status == 1 || order.order_status == 2">取消订单</button>
+                                    v-if="order.order_status == 1 || order.order_status == 2"
+                                    @click="btnHandlerByOwner(order, true)">取消订单</button>
                             </view>
 
                             <view class="btns" v-else-if="activeTab == 2">
                                 <button class="yellow_btn" type="default" size="mini" :plain="true"
-                                    v-if="order.order_status == 3">确认完成</button>
+                                    v-if="order.order_status == 3" @click="btnHandlerByConsumer(order)">确认完成</button>
                             </view>
                         </view>
                     </view>
@@ -103,10 +104,13 @@
 
 <script setup>
 import Calendar from './components/Calender/calendar.vue'
-import { ref, computed, watch, onMounted } from 'vue'
-import { getProcessingOrder, getOrderByDate, getOrderDate } from '/api/order'
+import { ref, computed, watch, onMounted, toRefs } from 'vue'
+import { getProcessingOrder, getOrderByDate, getOrderDate, deleteOrderByOwner, startMakeByOwner, finishMakeByOwner, finishOrderByConsumer } from '/api/order'
 import { orderStatus } from '/utils/statusMap'
-// TODO  1:未点击日历前, 展示的是进行中的订单, 点击下方的历史订单, 则展示除进行中订单外的所有订单(近一周)
+// TODO  点击下方的历史订单, 则展示状态为(4或5)的所有订单(近一周)
+
+// 最近调用的获取列表接口 1:getProcessingOrder; 2: getOrderByDate
+let interfaceIndex = 0
 
 // 日历是否缩略
 const isAbb = ref(true)
@@ -170,11 +174,12 @@ const getOrderListByProcessing = () => {
     getProcessingOrder(param).then(res => {
         orderList.value = res.data
         orderList.value.forEach(item => item.showDetail = false)
-        console.log(orderList.value);
-    }).catch(err => {
-        console.log(err, '---err');
-    }).finally(() => {
         uni.hideLoading()
+    }).catch(err => {
+        uni.hideLoading()
+        uni.showToast({ title: '获取订单失败', icon: "none" })
+    }).finally(() => {
+        interfaceIndex = 1
     })
 }
 
@@ -192,10 +197,12 @@ const getOrderListByDate = () => {
     getOrderByDate(param).then(res => {
         orderList.value = res.data
         orderList.value.forEach(item => item.showDetail = false)
-    }).catch(err => {
-        console.log(err, '===');
-    }).finally(() => {
         uni.hideLoading()
+    }).catch(err => {
+        uni.hideLoading()
+        uni.showToast({ title: '获取订单失败', icon: "none" })
+    }).finally(() => {
+        interfaceIndex = 2
     })
 }
 
@@ -204,18 +211,172 @@ const getOrderDateList = () => {
     uni.showLoading()
 
     getOrderDate().then(res => {
+        uni.hideLoading()
         if (res.code == 200) {
             selectedDayList.value = res.data
         }
     }).catch(err => {
-        console.log(err, '---');
-    }).finally(() => {
         uni.hideLoading()
+        uni.showToast({ title: '获取订单日期失败', icon: "none" })
     })
 }
 
 // 订单状态map
 const orderStatusMap = orderStatus()
+
+// 修改订单状态按钮 待制作->制作中->制作完成
+const btnHandlerByOwner = (order, isCancel) => {
+    const { id: orderId, order_status } = toRefs(order)
+
+    if (isCancel) {
+        // 商家取消订单
+        return uni.showModal({
+            title: '提示',
+            content: '确认要取消该订单吗？',
+            success: function (res) {
+                if (res.confirm) {
+                    uni.showLoading()
+
+                    const param = {
+                        orderId: orderId.value
+                    }
+
+                    deleteOrderByOwner(param).then(res => {
+                        uni.hideLoading()
+
+                        if (res.code == 200) {
+                            uni.showToast({ title: "取消订单成功", icon: "none", mask: true })
+                            setTimeout(() => {
+                                switch (interfaceIndex) {
+                                    case 1:
+                                        getOrderListByProcessing()
+                                        break;
+                                    case 2:
+                                        getOrderListByDate()
+                                        break;
+                                }
+                            }, 1500);
+                        }
+                    }).catch(err => {
+                        uni.hideLoading()
+                        uni.showToast({ title: '取消订单失败', icon: "none" })
+                    })
+                } else {
+                    console.log('点击了取消')
+                }
+            }
+        })
+    }
+
+    if (order_status.value == 1) {
+        // 待制作->制作中
+        startMakeHandler(orderId.value)
+    } else if (order_status.value == 2) {
+        // 制作中->制作完成
+        doneMakeHandler(orderId.value)
+    }
+}
+// 修改订单状态 制作完成->订单完成
+const btnHandlerByConsumer = (order) => {
+    const { id: orderId } = toRefs(order)
+
+    uni.showModal({
+        title: '提示',
+        content: '确认要完成该订单吗？',
+        success: function (res) {
+            if (res.confirm) {
+                finishOrderHandler(orderId.value)
+            } else {
+                console.log('点击了取消')
+            }
+        }
+    })
+}
+
+// 待制作->制作中
+const startMakeHandler = (orderId) => {
+    const param = {
+        orderId
+    }
+
+    startMakeByOwner(param).then(res => {
+        uni.hideLoading()
+
+        if (res.code == 200) {
+            uni.showToast({ title: "该订单开始制作", icon: "none", mask: true })
+            setTimeout(() => {
+                switch (interfaceIndex) {
+                    case 1:
+                        getOrderListByProcessing()
+                        break;
+                    case 2:
+                        getOrderListByDate()
+                        break;
+                }
+            }, 1500);
+        }
+    }).catch(err => {
+        uni.hideLoading()
+        uni.showToast({ title: '订单状态修改失败', icon: "none" })
+    })
+}
+
+// 制作中->制作完成
+const doneMakeHandler = (orderId) => {
+    const param = {
+        orderId
+    }
+
+    finishMakeByOwner(param).then(res => {
+        uni.hideLoading()
+
+        if (res.code == 200) {
+            uni.showToast({ title: "该订单完成制作", icon: "none", mask: true })
+            setTimeout(() => {
+                switch (interfaceIndex) {
+                    case 1:
+                        getOrderListByProcessing()
+                        break;
+                    case 2:
+                        getOrderListByDate()
+                        break;
+                }
+            }, 1500);
+        }
+    }).catch(err => {
+        uni.hideLoading()
+        uni.showToast({ title: '订单状态修改失败', icon: "none" })
+    })
+}
+
+// 制作完成->订单完成
+const finishOrderHandler = (orderId) => {
+    const param = {
+        orderId
+    }
+
+    finishOrderByConsumer(param).then(res => {
+        uni.hideLoading()
+
+        if (res.code == 200) {
+            uni.showToast({ title: "已确认该订单完成", icon: "none", mask: true })
+            setTimeout(() => {
+                switch (interfaceIndex) {
+                    case 1:
+                        getOrderListByProcessing()
+                        break;
+                    case 2:
+                        getOrderListByDate()
+                        break;
+                }
+            }, 1500);
+        }
+    }).catch(err => {
+        uni.hideLoading()
+        uni.showToast({ title: '订单状态修改失败', icon: "none" })
+    })
+
+}
 
 </script>
 
