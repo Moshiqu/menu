@@ -14,13 +14,13 @@
                 <view class="tab_tip">{{ tabConfig[activeTab].tip }}</view>
                 <image :src="tabConfig[activeTab].emptyImg" mode="scaleToFill" class="empty_img" v-if="!orderList.length" />
                 <view class="order_content">
-                    <view class="order_card" v-for="order in  orderList " :key="order.id">
+                    <view class="order_card" v-for="order in orderList " :key="order.id">
                         <view class="card_title">
                             <view class="create_time">
                                 <text>制作时间：</text>
                                 <text>{{ $formateTime(order.make_time) }}</text>
                             </view>
-                            <view class="order_status">已下单</view>
+                            <view class="order_status">{{ orderStatusMap.get(order.order_status) }}</view>
                         </view>
                         <view class="card_productions_content">
                             <!-- 缩略信息 -->
@@ -61,16 +61,26 @@
                             </view>
                         </view>
                         <view class="card_information">
-                            <!-- 如果是饭店订单, 用户信息显示下单人的信息; 如果是个人订单, 用户信息显示菜单所属商户信息 -->
+                            <!-- TODO 如果是饭店订单, 用户信息显示下单人的信息; 如果是个人订单, 用户信息显示菜单所属商户信息 -->
                             <view class="userInfo">
                                 <view class="avatar">
                                     <image src="/static/image/default_img.jpg" mode="scaleToFill" />
                                 </view>
                                 <view class="username">活捉一枚雪</view>
                             </view>
-                            <view class="btns">
-                                <button class="red_btn" type="default" size="mini" :plain="true">已完成</button>
-                                <button class="yellow_btn" type="default" size="mini" :plain="true">删除</button>
+                            <view class="btns" v-if="activeTab == 1">
+                                <button class="red_btn" type="default" size="mini" :plain="true"
+                                    v-if="order.order_status == 1">开始制作</button>
+                                <button class="red_btn" type="default" size="mini" :plain="true"
+                                    v-else-if="order.order_status == 2">制作完成</button>
+
+                                <button class="yellow_btn" type="default" size="mini" :plain="true"
+                                    v-if="order.order_status == 1 || order.order_status == 2">取消订单</button>
+                            </view>
+
+                            <view class="btns" v-else-if="activeTab == 2">
+                                <button class="yellow_btn" type="default" size="mini" :plain="true"
+                                    v-if="order.order_status == 3">确认完成</button>
                             </view>
                         </view>
                     </view>
@@ -94,8 +104,9 @@
 <script setup>
 import Calendar from './components/Calender/calendar.vue'
 import { ref, computed, watch, onMounted } from 'vue'
-import { getProcessingOrder, getOrderByDate } from '/api/order'
-// TODO  1:未点击日历前, 展示的是进行中的订单, 点击下方的历史订单, 则展示除进行中订单外的所有订单(近一周) 2: 写接口, 获取包含订单的年月日, 写入日历组件
+import { getProcessingOrder, getOrderByDate, getOrderDate } from '/api/order'
+import { orderStatus } from '/utils/statusMap'
+// TODO  1:未点击日历前, 展示的是进行中的订单, 点击下方的历史订单, 则展示除进行中订单外的所有订单(近一周)
 
 // 日历是否缩略
 const isAbb = ref(true)
@@ -109,7 +120,7 @@ const change = (dateObj) => {
 // 所选日期
 const currentDate = ref('')
 
-const selectedDayList = ref([{ date: '2024-05-17' }, { date: '2024-05-07' }])
+const selectedDayList = ref([])
 
 // tab栏
 const activeTab = ref(1)
@@ -142,6 +153,7 @@ const openHistoryOrder = () => {
 }
 
 onMounted(() => {
+    getOrderDateList()
     getOrderListByProcessing()
 })
 
@@ -186,6 +198,24 @@ const getOrderListByDate = () => {
         uni.hideLoading()
     })
 }
+
+// 获取有订单的日期
+const getOrderDateList = () => {
+    uni.showLoading()
+
+    getOrderDate().then(res => {
+        if (res.code == 200) {
+            selectedDayList.value = res.data
+        }
+    }).catch(err => {
+        console.log(err, '---');
+    }).finally(() => {
+        uni.hideLoading()
+    })
+}
+
+// 订单状态map
+const orderStatusMap = orderStatus()
 
 </script>
 
@@ -265,7 +295,7 @@ const getOrderListByDate = () => {
                             display: flex;
 
                             .order_content_scroll_bar {
-                                width: 100%;
+                                width: calc(100% - 100rpx);
                                 overflow: hidden;
                                 white-space: nowrap;
 
@@ -289,6 +319,7 @@ const getOrderListByDate = () => {
                             }
 
                             .card_price_bar {
+                                width: 100rpx;
                                 margin-left: 20rpx;
                                 text-align: end;
 
@@ -357,7 +388,7 @@ const getOrderListByDate = () => {
                                 height: 28rpx;
                             }
 
-                            .top{
+                            .top {
                                 transform: rotate(180deg);
                             }
                         }
