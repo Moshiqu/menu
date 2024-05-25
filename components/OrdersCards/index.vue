@@ -4,7 +4,9 @@
             <view class="card_title">
                 <view class="create_time">
                     <text>制作时间：</text>
-                    <text>{{ $formateTime(order.make_time) }}</text>
+                    <text :style="{ color: order.make_type == 'time' ? 'red' : '' }">{{ $formateTime(order.make_time)
+                    }}</text>
+                    <text v-if="order.make_type == 'time'" style="color: red;">(预约)</text>
                 </view>
                 <view class="order_status">{{ orderStatusMap.get(order.order_status) }}</view>
             </view>

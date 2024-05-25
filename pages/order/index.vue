@@ -26,6 +26,9 @@
                         </view>
                         <OrdersCards :orderList="historyOrderList" @btnHandlerByOwner="btnHandlerByOwner"
                             @btnHandlerByConsumer="btnHandlerByConsumer" :orderType="activeTab" />
+                        <view class="history_footer">
+                            仅展示七天内的历史订单, 更早的订单请点击日历查询
+                        </view>
                     </template>
                 </view>
             </view>
@@ -36,8 +39,7 @@
 <script setup>
 import Calendar from './components/Calender/calendar.vue'
 import { ref, computed, watch, onMounted, toRefs } from 'vue'
-import { getProcessingOrder, getOrderByDate, getOrderDate, deleteOrderByOwner, startMakeByOwner, finishMakeByOwner, finishOrderByConsumer } from '/api/order'
-import { orderStatus } from '/utils/statusMap'
+import { getProcessingOrder, getOrderByDate, getOrderDate, deleteOrderByOwner, startMakeByOwner, finishMakeByOwner, finishOrderByConsumer, getHistoryOrder } from '/api/order'
 import OrdersCards from '/components/OrdersCards'
 // TODO  点击下方的历史订单, 则展示状态为(4或5)的所有订单(近一周)
 
@@ -86,15 +88,27 @@ watch(() => activeTab.value, () => {
 const historyOrderList = ref([])
 
 // 获取历史订单
-const getHistoryOrder = ()=>{
+const getOrderInHistory = () => {
+    if (!tabConfig.value[activeTab.value].isOpen) return
     uni.showLoading()
-    
+    const param = {
+        classic: activeTab.value
+    }
+    getHistoryOrder(param).then(res => {
+        uni.hideLoading()
+        if (res.code == 200) {
+            historyOrderList.value = res.data
+        }
+    }).catch(err => {
+        uni.hideLoading()
+        uni.showToast({ title: '获取订单失败', icon: "none" })
+    })
 }
 
 // 展开历史订单
 const openHistoryOrder = () => {
     tabConfig.value[activeTab.value].isOpen = true
-    getHistoryOrder()
+    getOrderInHistory()
 }
 
 onMounted(() => {
@@ -122,6 +136,8 @@ const getOrderListByProcessing = () => {
     }).finally(() => {
         interfaceIndex = 1
     })
+
+    getOrderInHistory()
 }
 
 // 根据日期获取订单
@@ -162,9 +178,6 @@ const getOrderDateList = () => {
     })
 }
 
-// 订单状态map
-const orderStatusMap = orderStatus()
-
 // 修改订单状态按钮 待制作->制作中->制作完成
 const btnHandlerByOwner = (order, isCancel) => {
     const { id: orderId, order_status } = toRefs(order)
@@ -187,6 +200,7 @@ const btnHandlerByOwner = (order, isCancel) => {
 
                         if (res.code == 200) {
                             uni.showToast({ title: "取消订单成功", icon: "none", mask: true })
+                            // 重新获取数据
                             setTimeout(() => {
                                 switch (interfaceIndex) {
                                     case 1:
@@ -223,7 +237,7 @@ const btnHandlerByConsumer = (order) => {
 
     uni.showModal({
         title: '提示',
-        content: '确认要完成该订单吗？',
+        content: '确认要完成该订单吗？订单完成后可在历史订单中查看',
         success: function (res) {
             if (res.confirm) {
                 finishOrderHandler(orderId.value)
@@ -394,6 +408,15 @@ const finishOrderHandler = (orderId) => {
                         margin-top: 6rpx;
                         margin-left: 8rpx;
                     }
+                }
+
+                .history_footer {
+                    display: flex;
+                    color: #777;
+                    font-size: 14px;
+                    align-content: center;
+                    justify-content: center;
+                    margin-bottom: 20rpx;
                 }
             }
         }
