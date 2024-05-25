@@ -1,6 +1,6 @@
 <template>
     <view class="order_content">
-        <view class="order_card" v-for="order in orderList " :key="order.id">
+        <view class="order_card" v-for="order in orderList " :key="order.id" @click="cardHandler(order.id)">
             <view class="card_title">
                 <view class="create_time">
                     <text>制作时间：</text>
@@ -41,7 +41,7 @@
                         </view>
                     </view>
                 </view>
-                <view class="card_abb_btn" @click="order.showDetail = !order.showDetail">
+                <view class="card_abb_btn" @click.stop="order.showDetail = !order.showDetail">
                     <image src="/static/image/common/down.png" mode="scaleToFill"
                         :class="[order.showDetail ? 'top' : '']" />
                 </view>
@@ -56,18 +56,18 @@
                 </view>
                 <view class="btns" v-if="showOperation && orderType == 1">
                     <button class="red_btn" type="default" size="mini" :plain="true" v-if="order.order_status == 1"
-                        @click="btnHandlerByOwner(order)">开始制作</button>
+                        @click.stop="btnHandlerByOwner(order)">开始制作</button>
                     <button class="red_btn" type="default" size="mini" :plain="true" v-else-if="order.order_status == 2"
-                        @click="btnHandlerByOwner(order)">制作完成</button>
+                        @click.stop="btnHandlerByOwner(order)">制作完成</button>
 
                     <button class="yellow_btn" type="default" size="mini" :plain="true"
                         v-if="order.order_status == 1 || order.order_status == 2"
-                        @click="btnHandlerByOwner(order, true)">取消订单</button>
+                        @click.stop="btnHandlerByOwner(order, true)">取消订单</button>
                 </view>
 
                 <view class="btns" v-else-if="showOperation && orderType == 2">
                     <button class="yellow_btn" type="default" size="mini" :plain="true" v-if="order.order_status == 3"
-                        @click="btnHandlerByConsumer(order)">确认完成</button>
+                        @click.stop="btnHandlerByConsumer(order)">确认完成</button>
                 </view>
             </view>
         </view>
@@ -99,6 +99,11 @@ const btnHandlerByOwner = (order, flag) => {
 
 const btnHandlerByConsumer = (order, flag) => {
     $emits('btnHandlerByConsumer', order, flag)
+}
+
+// 点击订单卡片
+const cardHandler = (orderId) => {
+    uni.navigateTo({ url: `/pages/orderDetail/index?orderId=${orderId}` })
 }
 
 </script>
