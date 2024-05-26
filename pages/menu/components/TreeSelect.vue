@@ -35,7 +35,7 @@
                             <view class="product_like" v-if="!isEdit && product.like_num">
                                 <view>
                                     <image src="/static/image/menu/icon_like.png" mode="widthFix" />
-                                    <view class="num">123</view>
+                                    <view class="num">{{ product.like_num }}</view>
                                 </view>
                             </view>
                             <view class="product_operation" v-if="!isEdit">

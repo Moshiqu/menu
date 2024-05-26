@@ -27,3 +27,5 @@ export const finishMakeByOwner = (options) => request({ url: '/api/order/finishM
 // 作为商家 修改订单状态 制作完成=>订单完成
 export const finishOrderByConsumer = (options) => request({ url: '/api/order/finishOrder', method: "post", data: options })
 
+// 订单详情
+export const getOrderDetail = (options) => request({ url: '/api/order/getOrderDetail', method: "get", data: options })

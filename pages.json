@@ -10,7 +10,7 @@
         {
             "path": "pages/order/index",
             "style": {
-                "navigationBarTitleText": "uni-app"
+                "navigationBarTitleText": "我的订单"
             }
         },
         {

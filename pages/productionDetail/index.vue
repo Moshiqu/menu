@@ -51,6 +51,9 @@ onMounted(() => {
     getProductionDetail({ productionId: productionId.value }).then(res => {
         if (res.code === 200) {
             productionDetail.value = res.data
+            uni.setNavigationBarTitle({
+                title: res.data.product_name
+            })
             uni.hideLoading()
         } else {
             uni.hideLoading()
@@ -66,7 +69,7 @@ onMounted(() => {
 // 当前产品
 const productionId = ref(0)
 
-const productionDetail = ref({stepList:[],materialList:[]})
+const productionDetail = ref({ stepList: [], materialList: [] })
 
 // 切换图片大小
 const isNormalMode = ref(true)
@@ -138,7 +141,7 @@ const exchangeSize = () => {
                 width: 100%;
             }
 
-            .zip_step_img{
+            .zip_step_img {
                 width: 200rpx;
                 height: 200rpx;
             }
